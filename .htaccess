@@ -1,0 +1,31 @@
+RewriteEngine On
+
+#Global
+RewriteRule ^admin$ admin.php
+RewriteRule ^home$ index.php
+
+#-------------------------- View -----------------------------
+#View Annonce
+RewriteRule ^ListeAnnonce$ view/pages/admin/annonce/liste.php
+RewriteRule ^CorbeilleAnnonce$ view/pages/admin/annonce/corbeille.php
+
+#View Avis
+RewriteRule ^ListeAvis$ view/pages/admin/avis/liste.php
+RewriteRule ^CorbeilleAvis$ view/pages/admin/avis/corbeille.php
+
+#View Candidature
+RewriteRule ^ListeCandidature$ view/pages/admin/candidature/liste.php
+RewriteRule ^CorbeilleCandidature$ view/pages/admin/candidature/corbeille.php
+
+#View Categorie
+RewriteRule ^ListeCategorie$ view/pages/admin/categorie/liste.php
+RewriteRule ^CorbeilleCategorie$ view/pages/admin/categorie/corbeille.php
+
+#View Utilisateur
+RewriteRule ^ListeUtilisateur$ view/pages/admin/utilisateur/liste.php
+RewriteRule ^CorbeilleUtilisateur$ view/pages/admin/utilisateur/corbeille.php
+
+#view Zone
+RewriteRule ^ListeZone$ view/pages/admin/zone/liste.php
+RewriteRule ^CorbeilleZone$ view/pages/admin/zone/corbeille.php
+
