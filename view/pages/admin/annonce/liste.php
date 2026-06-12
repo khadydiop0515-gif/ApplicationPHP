@@ -627,9 +627,9 @@
                         <label for="status">Statut</label>
                         <select class="form-control" id="status" name="status" required>
                             <option value="">-- Sélectionner --</option>
-                            <option value="ouverte">Ouverte</option>
-                            <option value="fermee">Fermée</option>
-                            <option value="en_attente">En attente</option>
+                            <option value="ouvert">Ouverte</option>
+                            <option value="pourvu">Pourvue</option>
+                            <option value="annule">Annulée</option>
                         </select>
                     </div>
 

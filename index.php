@@ -9,8 +9,8 @@
 
 	
 	<!-- ================== BASE CSS STYLE ================== -->
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-	<link href="public/templates/templateVitrine/assets/css/one-page-parallax/app.min.css" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"/>
+	<link href="public/templates/templateVitrine/assets/css/one-page-parallax/app.min.css" rel="stylesheet"/>
 </head>
 
 	<!-- ================= BODY ================== -->
@@ -24,10 +24,8 @@
 		<!-- ================== SECTION BANNIERE ================== -->
 		<?php require_once("view/sections/vitrine/banniere.php"); ?>
 		
-		
 		<!-- ================== SECTION A PROPOS ================== -->
 		<?php require_once("view/sections/vitrine/about.php"); ?>
-		
 		
 		<!-- ================== SECTION CHIFFRAGE ================== -->
 		<?php require_once("view/sections/vitrine/chiffrage.php"); ?>
@@ -35,26 +33,20 @@
 		<!-- ================== SECTION EQUIPE ================== -->
 		<?php require_once("view/sections/vitrine/team.php"); ?>
 		
-		
 		<!-- ================== SECTION INFO ================== -->
 		<?php require_once("view/sections/vitrine/info.php"); ?>
-		
 		
 		<!-- ================== SECTION SERVICES ================== -->
 		<?php require_once("view/sections/vitrine/services.php"); ?>
 		
-		
 		<!-- ================== SECTION ACTION ================== -->
 		<?php require_once("view/sections/vitrine/action.php"); ?>
-		
 		
 		<!-- ================== SECTION Réalisation ================== -->
 		<?php require_once("view/sections/vitrine/realisation.php"); ?>
 		
-		
 		<!-- ================== SECTION CLIENTS ================== -->
 		<?php require_once("view/sections/vitrine/clients.php"); ?>
-		
 		
 		<!-- ================== SECTION PRICING ================== -->
 		<?php require_once("view/sections/vitrine/pricing.php"); ?>
@@ -62,7 +54,6 @@
 		<!-- ================== SECTION CONTACT ================== -->
 		<?php require_once("view/sections/vitrine/contact.php"); ?>
 
-		
 		<!-- ================== SECTION FOOTER ================== -->
 		<?php require_once("view/sections/vitrine/footer.php"); ?>
 		
