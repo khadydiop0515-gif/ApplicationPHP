@@ -21,9 +21,9 @@
 		<div id="content" class="content">
 			<!-- begin breadcrumb -->
 			<ol class="breadcrumb float-xl-right">
-				<li class="breadcrumb-item">
+				<!--<li class="breadcrumb-item">
 					<a href="#modal-candidature" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Ajouter</a>
-				</li>
+				</li> -->
 				<li class="breadcrumb-item"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Corbeille</a></li>
 				<li class="breadcrumb-item active"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Users</a></li>
 			</ol>

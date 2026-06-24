@@ -22,9 +22,9 @@
 		 <div id="content" class="content">
 			<!-- begin breadcrumb -->
 			<ol class="breadcrumb float-xl-right">
-				<li class="breadcrumb-item">
+				<!-- <li class="breadcrumb-item">
 					<a href="#modal-annonce" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Ajouter</a>
-				</li>
+				</li> -->
 				<li class="breadcrumb-item"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Corbeille</a></li>
 				<li class="breadcrumb-item active"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Users</a></li>
 			</ol>
@@ -67,8 +67,8 @@
 								<td><span class="badge badge-success">Ouverte</span></td>
 								<td>
 										<a href="#" class="btn btn-xs btn-info" title="Voir l'annonce"><i class="fa fa-eye"></i> Voir</a>
-										<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>
-										<a href="#"></a> 
+										<!--<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>-->
+										<a href="#" class="btn btn-xs btn-danger" title="Supprimer l'annonce"><i class="fa fa-trash"></i> Supprimer</a>
 								</td>
 							</tr>
 							<tr>
@@ -79,7 +79,8 @@
 								<td><span class="badge badge-info">Ouverte</span></td>
 								<td>
 										<a href="#" class="btn btn-xs btn-info" title="Voir l'annonce"><i class="fa fa-eye"></i> Voir</a>
-										<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>
+										<!--<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>-->
+										<a href="#" class="btn btn-xs btn-danger" title="Supprimer l'annonce"><i class="fa fa-trash"></i> Supprimer</a>
 										
 								</td>
 							</tr>
@@ -91,7 +92,8 @@
 								<td><span class="badge badge-warning">Pourvue</span></td>
 								<td>
 										<a href="#" class="btn btn-xs btn-info" title="Voir l'annonce"><i class="fa fa-eye"></i> Voir</a>
-										<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>
+										<!--<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>-->
+										<a href="#" class="btn btn-xs btn-danger" title="Supprimer l'annonce"><i class="fa fa-trash"></i> Supprimer</a>
 										
 								</td>
 							</tr>
@@ -103,7 +105,8 @@
 								<td><span class="badge badge-danger">Annulée</span></td>
 								<td>
 										<a href="#" class="btn btn-xs btn-info" title="Voir l'annonce"><i class="fa fa-eye"></i> Voir</a>
-										<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>
+										<!--<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>-->
+										<a href="#" class="btn btn-xs btn-danger" title="Supprimer l'annonce"><i class="fa fa-trash"></i> Supprimer</a>
 								</td>
 							</tr>
 							

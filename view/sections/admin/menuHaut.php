@@ -62,13 +62,21 @@
 			<li class="dropdown navbar-user">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 					<img src="public/templates/templateAdmin/assets/img/user/user-13.jpg" alt="" /> 
-					<span class="d-none d-md-inline"><?php echo $_SESSION['nom'] ?? 'Utilisateur'; ?></span> <b class="caret"></b>
+					<span class="d-none d-md-inline">
+    <?php 
+        if(isset($_SESSION['prenom']) && isset($_SESSION['nom'])) {
+            echo htmlspecialchars($_SESSION['prenom'] . ' ' . $_SESSION['nom']);
+        } else {
+            echo "Utilisateur";
+        }
+    ?>
+</span> <b class="caret"></b>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
 					<a href="javascript:;" class="dropdown-item">Profil</a>
 					<a href="javascript:;" class="dropdown-item">Paramètres</a>
 					<div class="dropdown-divider"></div>
-					<a href="index.php?action=logout" class="dropdown-item">Déconnexion</a>
+					<a href="userMainController?action=logout" class="dropdown-item">Déconnexion</a>
 				</div>
 			</li>
 		</ul>

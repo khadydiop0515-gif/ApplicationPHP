@@ -19,18 +19,18 @@
 	</div>
 	
 	
-	<!-- begin #page-container -->
+	
 	<div id="page-container" class="fade">
 	<!-- ================== Section Form ================== -->
 	<?php require_once("view/sections/login/form.php") ?>
 		
 		
-		<!-- ================== Section config ================== -->
-		 <?php require_once("view/sections/login/config.php") ?>
+	<!-- ================== Section config ================== -->
+	<?php require_once("view/sections/login/config.php") ?>
 		
-		<!-- ================== Section scroll to top ================== -->
-		<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
-		
+	<!-- ================== Section scroll to top ================== -->
+	<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
+	
 	</div>
 	<!-- ================== BEGIN BASE JS ================== -->
 	<script src="public/templates/templateAdmin/assets/js/app.min.js"></script>

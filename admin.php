@@ -1,3 +1,14 @@
+<?php 
+session_start();
+
+// Si l'utilisateur n'est pas connecté, on le renvoie vers login
+if (!isset($_SESSION['id'])) {
+    header("Location: login");
+    exit();
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 	<!-- ================== section HEAD ================== -->

@@ -51,19 +51,19 @@ RewriteRule ^zoneController$ controller/zone/ZoneMainController.php
 
 #-------------------------- Model -----------------------------
 #Annonce
-RewriteRule ^annonceRepo$ controller/AnnonceRepository.php
+RewriteRule ^annonceRepo$ model/AnnonceRepository.php
 
 #Avis
-RewriteRule ^avisRepo$ controller/AvisRepository.php
+RewriteRule ^avisRepo$ model/AvisRepository.php
 
 #Candidature
-RewriteRule ^candidatureRepo$ controller/CandidatureRepository.php
+RewriteRule ^candidatureRepo$ model/CandidatureRepository.php
 
 #Catégorie
-RewriteRule ^categorieRepo$ controller/CategorieRepository.php
+RewriteRule ^categorieRepo$ model/CategorieRepository.php
 
 #Users
-RewriteRule ^userRepo$ controller/UserRepository.php
+RewriteRule ^userRepo$ model/UserRepository.php
 
 #Zone
-RewriteRule ^zoneRepo$ controller/ZoneRepository.php
+RewriteRule ^zoneRepo$ model/ZoneRepository.php
