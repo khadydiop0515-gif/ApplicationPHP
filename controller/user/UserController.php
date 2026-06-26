@@ -104,4 +104,34 @@ class UserController
         header("Location: login"); 
         exit;
     }
+
+    
+public function listUsers() {
+    return $this->userRepository->getAll();
+}
+
+public function updateUser() {
+    if($_SERVER['REQUEST_METHOD'] == 'POST'){
+        $id = $_POST['id'];
+        $nom = $_POST['nom'];
+        $prenom = $_POST['prenom'];
+        $email = $_POST['email'];
+        $phone = $_POST['phone'];
+        $adresse = $_POST['adresse'];
+        $role = $_POST['role'];
+        $ninea = $_POST['ninea'];
+
+        if($this->userRepository->update($id, $nom, $prenom, $email, $phone, $adresse, $role, $ninea)){
+            header("Location: ListeUtilisateur?succes=1&message=Utilisateur mis à jour&title=Succès");
+            exit;
+        }
+    }
+}
+
+public function deleteUser($id) {
+    if($this->userRepository->deactivate($id)){
+        header("Location: ListeUtilisateur?succes=1&message=Utilisateur supprimé&title=Suppression");
+        exit;
+    }
+}
 }

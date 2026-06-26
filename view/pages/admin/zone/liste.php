@@ -1,3 +1,8 @@
+<?php
+require_once("../../../../model/ZoneRepository.php");
+$repo = new ZoneRepository();
+$zones = $repo->getAll();
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<!-- ================== section HEAD ================== -->
@@ -55,66 +60,77 @@
 								<th class="text-nowrap">Actions</th>
 							</tr>
 						</thead>
-						<tbody>
-							<tr class="odd gradeX">
-								<td width="1%" class="f-w-600 text-inverse">1</td>
-								<td width="1%" class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-1.jpg" class="img-rounded height-30" /></td>
-								<td>Dakar</td>
-								<td>
-									<a href="#modal-zone" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
-								</td>
-							</tr>
-							<tr class="even gradeC">
-								<td class="f-w-600 text-inverse">2</td>
-								<td class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-2.jpg" class="img-rounded height-30" /></td>
-								<td>Thiès</td>
-								<td>
-									<a href="#modal-zone" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
-								</td>
-							</tr>
-							<tr class="odd gradeA">
-								<td class="f-w-600 text-inverse">3</td>
-								<td class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-3.jpg" class="img-rounded height-30" /></td>
-								<td>Saint-Louis</td>
-								<td>
-									<a href="#modal-zone" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
-								</td>
-							</tr>
-						</tbody>
+							<tbody>
+								<?php if (!empty($zones)): ?>
+									<?php foreach ($zones as $index => $z): ?>
+										<tr>
+											<td width="1%"><?= $index + 1 ?></td>
+											<td width="1%"><i class="fa fa-map-marker-alt text-danger fa-lg"></i></td>
+											<td><strong><?= htmlspecialchars($z['nom_quartier']) ?></strong></td>
+											<td>
+												<a href="#modal-edit-zone" data-toggle="modal" class="btn btn-xs btn-primary" 
+												onclick='editZone(<?= json_encode($z) ?>)'>
+													<i class="fa fa-edit"></i> Modifier
+												</a>
+												<a href="javascript:;" class="btn btn-xs btn-danger" 
+												onclick="confirmDeleteZone(<?= $z['id'] ?>)">
+													<i class="fa fa-trash"></i> Supprimer
+												</a>
+											</td>
+										</tr>
+									<?php endforeach; ?>
+								<?php endif; ?>
+							</tbody>
+
 					</table>
 				</div>
 			</div>
 		</div>
 	</div>
-<!-- ================== Modal Ajouter ================== -->
-	<div class="modal fade" id="modal-zone">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Ajouter une zone</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				</div>
-				<form action="liste.php" method="post">
-					<div class="modal-body">
-						<div class="form-group">
-							<label>Nom</label>
-							<input type="text" name="nom" class="form-control" placeholder="Nom de la zone" />
+		<!-- MODAL AJOUT -->
+		<div class="modal fade" id="modal-zone">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form action="zoneMainController" method="POST">
+						<div class="modal-header"><h4 class="modal-title">Ajouter une zone</h4></div>
+						<div class="modal-body">
+							<div class="form-group">
+								<label>Nom du quartier</label>
+								<input type="text" name="nom_quartier" class="form-control" required placeholder="Ex: Dakar Plateau" />
+							</div>
 						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-						<button type="submit" class="btn btn-primary">Enregistrer</button>
-					</div>
-				</form>
+						<div class="modal-footer">
+							<button type="submit" name="frmAddZone" class="btn btn-primary">Enregistrer</button>
+						</div>
+					</form>
+				</div>
 			</div>
 		</div>
-	</div>
+
+		<!-- MODAL MODIFIER -->
+		<div class="modal fade" id="modal-edit-zone">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form action="zoneMainController" method="POST">
+						<div class="modal-header"><h4 class="modal-title">Modifier la zone</h4></div>
+						<div class="modal-body">
+							<input type="hidden" name="id" id="edit_zone_id">
+							<div class="form-group">
+								<label>Nom du quartier</label>
+								<input type="text" name="nom_quartier" id="edit_nom_quartier" class="form-control" required />
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="submit" name="frmEditZone" class="btn btn-warning">Mettre à jour</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 
 	<?php require_once("../../../sections/admin/config.php"); ?>
 	<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
 	<?php require_once("../../../sections/admin/script.php"); ?>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

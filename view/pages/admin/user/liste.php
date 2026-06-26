@@ -1,7 +1,13 @@
+<?php
+require_once("../../../../model/UserRepository.php");
+$repo = new UserRepository();
+$utilisateurs = $repo->getAll();
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<!-- ================== section HEAD ================== -->
 	<?php require_once("../../../sections/admin/head.php"); ?>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body>
 	<!-- ================== section page loader ================== -->
@@ -61,55 +67,32 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr class="odd gradeX">
-								<td width="1%" class="f-w-600 text-inverse">1</td>
-								<td width="1%" class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-1.jpg" class="img-rounded height-30" /></td>
-								<td>Diop</td>
-								<td>Awa</td>
-								<td>awa@example.com</td>
-								<td>772000000</td>
-								<td>Étudiant</td>
-								<td>123456789</td>
+							<?php foreach($utilisateurs as $index => $u): ?>
+							<tr>
+								<td><?= $index + 1 ?></td>
+								<td class="with-img">
+									<img src="public/images/users/<?= htmlspecialchars($u['photo']) ?>" class="img-rounded height-30" />
+								</td>
+								<td><?= htmlspecialchars($u['nom']) ?></td>
+								<td><?= htmlspecialchars($u['prenom']) ?></td>
+								<td><?= htmlspecialchars($u['email']) ?></td>
+								<td><?= htmlspecialchars($u['phone']) ?></td>
+								<td><span class="badge badge-info"><?= $u['role'] ?></span></td>
+								<td><?= htmlspecialchars($u['ninea'] ?: 'N/A') ?></td>
 								<td>
-									<a href="#modal-user" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
+									<a href="#modal-edit-user" data-toggle="modal" class="btn btn-xs btn-primary" onclick='editUser(<?= json_encode($u) ?>)'>Modifier</a>
+									<a href="javascript:;" class="btn btn-xs btn-danger" onclick="confirmDeleteUser(<?= $u['id'] ?>)">Supprimer</a>
 								</td>
 							</tr>
-							<tr class="even gradeC">
-								<td class="f-w-600 text-inverse">2</td>
-								<td class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-2.jpg" class="img-rounded height-30" /></td>
-								<td>Sarr</td>
-								<td>Moussa</td>
-								<td>moussa@example.com</td>
-								<td>771111111</td>
-								<td>Prestataire</td>
-								<td>987654321</td>
-								<td>
-									<a href="#modal-user" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
-								</td>
-							</tr>
-							<tr class="odd gradeA">
-								<td class="f-w-600 text-inverse">3</td>
-								<td class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-3.jpg" class="img-rounded height-30" /></td>
-								<td>Fall</td>
-								<td>Ndeye</td>
-								<td>ndeye@example.com</td>
-								<td>773333333</td>
-								<td>Admin</td>
-								<td>456789123</td>
-								<td>
-									<a href="#modal-user" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
-								</td>
-							</tr>
+							<?php endforeach; ?>
 						</tbody>
+
 					</table>
 				</div>
 			</div>
 		</div>
 	</div>
-<!-- ================== Modal Ajouter Annonce ================== -->
+<!-- ================== Modal Ajouter Annonce (inactif)================== -->
 	<div class="modal fade" id="modal-user">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
@@ -176,6 +159,40 @@
 			</div>
 		</div>
 	</div>
+	<!-- ================== Modal MOdifier Annonce ================== -->
+<div class="modal fade" id="modal-edit-user">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="userMainController" method="post">
+                <div class="modal-header"><h4 class="modal-title">Modifier l'utilisateur</h4></div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="edit_id">
+                    <div class="row">
+                        <div class="col-md-6 form-group"><label>Nom</label><input type="text" name="nom" id="edit_nom" class="form-control"></div>
+                        <div class="col-md-6 form-group"><label>Prénom</label><input type="text" name="prenom" id="edit_prenom" class="form-control"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group"><label>Email</label><input type="email" name="email" id="edit_email" class="form-control"></div>
+                        <div class="col-md-6 form-group"><label>Téléphone</label><input type="text" name="phone" id="edit_phone" class="form-control"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group"><label>Adresse</label><input type="text" name="adresse" id="edit_adresse" class="form-control"></div>
+                        <div class="col-md-6 form-group">
+                            <label>Rôle</label>
+                            <select name="role" id="edit_role" class="form-control">
+                                <option value="Etudiant">Etudiant</option>
+                                <option value="Prestataire">Prestataire</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>NINEA</label><input type="text" name="ninea" id="edit_ninea" class="form-control"></div>
+                </div>
+                <div class="modal-footer"><button type="submit" name="frmEditUser" class="btn btn-warning">Enregistrer</button></div>
+            </form>
+        </div>
+    </div>
+</div>
 
 	<?php require_once("../../../sections/admin/config.php"); ?>
 	<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>

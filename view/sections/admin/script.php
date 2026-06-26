@@ -21,3 +21,13 @@
 	<script src="public/templates/templateAdmin/assets/plugins/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
 	<script src="public/templates/templateAdmin/assets/js/demo/table-manage-default.demo.js"></script>
 	<!-- ================== END PAGE LEVEL JS ================== -->
+
+	<!-- ================== Validation ADD Annonce Form ================== -->
+	<script src="public/js/validator.js"></script>
+	<script src="public/js/annonce.js"></script>
+	<script src="public/js/avis.js"></script>
+	<script src="public/js/categorie.js"></script>
+	<script src="public/js/zone.js"></script>
+	<script src="public/js/candidature.js"></script>
+	<script src="public/js/user.js"></script>
+	<script src="public/js/inscription.js"></script>

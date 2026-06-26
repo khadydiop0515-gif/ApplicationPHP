@@ -32,22 +32,22 @@ RewriteRule ^CorbeilleZone$ view/pages/admin/zone/corbeille.php
 
 #-------------------------- Controller -----------------------------
 #Annonce
-RewriteRule ^annonceController$ controller/annonce/AnnonceMainController.php
+RewriteRule ^annonceMainController$ controller/annonce/AnnonceMainController.php
 
 #Avis
-RewriteRule ^avisController$ controller/avis/AvisMainController.php
+RewriteRule ^avisMainController$ controller/avis/AvisMainController.php
 
 #Candidature
-RewriteRule ^candidatureController$ controller/candidature/CandidatureMainController.php
+RewriteRule ^candidatureMainController$ controller/candidature/CandidatureMainController.php
 
 #Catégorie
-RewriteRule ^categorieController$ controller/categorie/CategorieMainController.php
+RewriteRule ^categorieMainController$ controller/categorie/CategorieMainController.php
 
 #Users
 RewriteRule ^userMainController$ controller/user/UserMainController.php
 
 #Zone
-RewriteRule ^zoneController$ controller/zone/ZoneMainController.php
+RewriteRule ^zoneMainController$ controller/zone/ZoneMainController.php
 
 #-------------------------- Model -----------------------------
 #Annonce

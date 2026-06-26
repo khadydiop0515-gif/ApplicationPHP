@@ -85,7 +85,7 @@
 					
 					<!-- ====== Déconnexion ===== -->
 					<li class="has-sub">
-						<a href="javascript:;">
+						<a href="userMainController?action=logout" >
 							<i class="fa fa-sign-out-alt"></i>
 							<span>Déconnexion</span>
 						</a>

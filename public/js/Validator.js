@@ -105,6 +105,16 @@ class Validator {
     }
 
     return null;
+    }
+    
+    static textValidator(label, value, min = 2) {
+    if (value.length === 0) {
+        return { message: `${label} est obligatoire` };
+    }
+    if (value.length < min) {
+        return { message: `${label} doit contenir au moins ${min} caractères` };
+    }
+    return null;
 }
 
 }

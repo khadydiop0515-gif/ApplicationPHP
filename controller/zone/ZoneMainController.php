@@ -1,0 +1,28 @@
+<?php
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+//  Inclusion du contrôleur 
+require_once("ZoneController.php");
+
+//  Instanciation de l'objet
+$candCtrl = new ZoneController();
+
+
+// AJOUT
+if (isset($_POST['frmAddZone'])) {
+    $candCtrl->addZone();
+}
+
+// MODIFICATION
+if (isset($_POST['frmEditZone'])) {
+    $candCtrl->updateZone();
+}
+
+// SUPPRESSION 
+if (isset($_GET['delete_id'])) {
+    $candCtrl->deleteZone($_GET['delete_id']);
+}
+?>

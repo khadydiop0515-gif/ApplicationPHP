@@ -1,7 +1,7 @@
 <?php
     require_once("DBRepository.php");
 
-//class AnnonceRepository extends DBRepository
+class AnnonceRepository extends DBRepository
 {
     //Recupérer la liste des annonces
     public function getAllAnnonces(string $statut) 
@@ -29,36 +29,38 @@
         try {
             $statement = $this->db->prepare($sql);
             $statement->bindParam(':id', $id, PDO::PARAM_INT);
-            $result = $statement->execute();
+            $statement->execute();
+            $result = $statement->fetch(PDO::FETCH_ASSOC); 
             return $result ?: null;
+
         } catch (PDOException $error) {
             error_log("Erreur lors de la récupération de l'annonce d'id $id : " . $error->getMessage());
             throw $error;
         }
     }
 
-    // Permet d'ajouter une nouvelle annonce
-    public function addAnnonce(string $titre, string $description, $salaire, string $statut) 
-    {
-        $sql = "INSERT INTO annonce (titre, description, salaire, statut, created_at)
-                VALUES (:titre, :description, :salaire, :statut, NOW())";
+    public function addAnnonce($titre, $description, $salaire, $categorie_id, $zone_id, $created_by) 
+{
+    
+    $sql = "INSERT INTO annonce (titre, description, salaire, statut, created_at, created_by, categorie_id, zone_id)
+            VALUES (:titre, :description, :salaire, 'Ouvert', NOW(), :user, :cat, :zone)";
 
-        try {
-            $statement = $this->db->prepare($sql);
-            $statement->execute([
-                'titre'       => $titre,
-                'description' => $description, 
-                'salaire'     => $salaire,
-                'statut'      => $statut
-            ]);
-            $lastInsertId() = $this->db->lastInsertId();
-            return $lastInsertId ?: null;
-            
-        } catch (PDOException $error) {
-            error_log("Erreur lors de l'ajout de l'annonce $titre : " . $error->getMessage());
-            throw $error;
-        }
+    try {
+        $statement = $this->db->prepare($sql);
+        $statement->execute([
+            'titre'       => $titre,
+            'description' => $description, 
+            'salaire'     => (int)$salaire, 
+            'user'        => $created_by,
+            'cat'         => $categorie_id,
+            'zone'        => $zone_id
+        ]);
+        return $this->db->lastInsertId();
+    } catch (PDOException $error) {
+        error_log("Erreur PDO : " . $error->getMessage());
+        throw $error;
     }
+}
 
     // Permet de modifier une  annonce
     public function updateAnnonce($id, string $titre, string $description, $salaire, string $statut) 
@@ -67,6 +69,7 @@
                 SET titre = :titre,
                 description = :description,
                 salaire = :salaire,
+                statut = :statut, 
                 updated_at = NOW()
                 WHERE id = :id"; 
 
@@ -88,7 +91,7 @@
         }
     }
 
-   // Permet de désactiver (annuler) une annonce
+   // Permet de désactiver (annulé) une annonce
     public function desactivate(int $id)
     {
         $sql = "UPDATE annonce 
@@ -140,6 +143,47 @@
                 error_log("Erreur lors de la suppression définitive de l'annonce d'id $id : " . $error->getMessage());
                 throw $error;
             }
+    }
+    // Dans AnnonceRepository.php
+
+    public function getAllAnnoncesWithDetails() 
+    {
+        // On fait une Joinnture pour avoir le nom de la catégorie et de la zone
+        $sql = "SELECT a.*, c.nom as categorie_nom, z.nom_quartier 
+                FROM annonce a
+                LEFT JOIN categorie c ON a.categorie_id = c.id
+                LEFT JOIN zone z ON a.zone_id = z.id
+                WHERE a.deleted_at IS NULL 
+                ORDER BY a.created_at DESC";
+
+        try {
+            return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $error) {
+            error_log("Erreur lors de la récupération des annonces : " . $error->getMessage());
+            return [];
+        }
+    }
+
+        public function updateAnnonceFull($id, $titre, $description, $salaire, $cat, $zone, $statut) {
+        $sql = "UPDATE annonce SET 
+                titre = :titre, 
+                description = :desc, 
+                salaire = :sal, 
+                categorie_id = :cat, 
+                zone_id = :zone, 
+                statut = :statut,
+                updated_at = NOW() 
+                WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'titre' => $titre,
+            'desc'  => $description,
+            'sal'   => $salaire,
+            'cat'   => $cat,
+            'zone'  => $zone,
+            'statut'=> $statut,
+            'id'    => $id
+        ]);
     }
 }
 ?> 

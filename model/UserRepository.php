@@ -61,4 +61,38 @@ class UserRepository extends DBRepository
             return false;
         }
     }
+
+     // Récupérer tous les utilisateurs actifs
+    public function getAll() {
+        $sql = "SELECT * FROM users WHERE etat = 1 ORDER BY created_at DESC";
+        return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Récupérer un utilisateur par son ID
+    public function getById($id) {
+        $sql = "SELECT * FROM users WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Mise à jour complète par l'admin
+    public function update($id, $nom, $prenom, $email, $phone, $adresse, $role, $ninea) {
+        $sql = "UPDATE users SET nom=:nom, prenom=:prenom, email=:email, phone=:phone, 
+                adresse=:adresse, role=:role, ninea=:ninea, updated_at=NOW() 
+                WHERE id=:id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'nom' => $nom, 'prenom' => $prenom, 'email' => $email,
+            'phone' => $phone, 'adresse' => $adresse, 'role' => $role,
+            'ninea' => $ninea, 'id' => $id
+        ]);
+    }
+
+    // Désactivation (Soft Delete via la colonne etat)
+    public function deactivate($id) {
+        $sql = "UPDATE users SET etat = 0 WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['id' => $id]);
+    }
 }

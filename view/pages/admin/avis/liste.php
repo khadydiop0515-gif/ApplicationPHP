@@ -1,3 +1,14 @@
+<?php
+require_once("../../../../model/AvisRepository.php");
+require_once("../../../../model/AnnonceRepository.php");
+
+$avisRepo = new AvisRepository();
+$annonceRepo = new AnnonceRepository();
+
+$listeAvis = $avisRepo->getAllWithDetails();
+$annonces = $annonceRepo->getAllAnnonces('Ouvert'); // Pour le select
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 	<!-- ================== section HEAD ================== -->
@@ -13,6 +24,7 @@
 	<div id="page-container" class="fade page-sidebar-fixed page-header-fixed">
 		<!-- ================== sectionMenu haut ================== -->
 		<?php require_once("../../../sections/admin/menuHaut.php"); ?>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 		<!-- ================== section Menu Gauche ================== -->
 		<?php require_once("../../../sections/admin/menuGauche.php"); ?>
@@ -21,9 +33,9 @@
 		<div id="content" class="content">
 			<!-- begin breadcrumb -->
 			<ol class="breadcrumb float-xl-right">
-				<!--<li class="breadcrumb-item">
+				<li class="breadcrumb-item">
 					<a href="#modal-avis" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Ajouter</a>
-				</li>-->
+				</li>
 				<li class="breadcrumb-item"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Corbeille</a></li>
 				<li class="breadcrumb-item active"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Users</a></li>
 			</ol>
@@ -57,36 +69,21 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr class="odd gradeX">
-								<td width="1%" class="f-w-600 text-inverse">1</td>
-								<td width="1%" class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-1.jpg" class="img-rounded height-30" /></td>
-								<td>5</td>
-								<td>Très bon service, prestation rapide.</td>
+							<?php foreach($listeAvis as $index => $avis): ?>
+							<tr>
+								<td><?= $index + 1 ?></td>
+								<td class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-1.jpg" class="img-rounded height-30" /></td>
+								<td><span class="badge badge-warning"><?= $avis['note'] ?> / 5</span></td>
 								<td>
-									<a href="#modal-avis" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
+									<strong>Annonce: <?= htmlspecialchars($avis['annonce_titre']) ?></strong><br>
+									<?= nl2br(htmlspecialchars($avis['commentaire'])) ?>
+								</td>
+								<td>
+									<a href="#modal-edit-avis" data-toggle="modal" class="btn btn-xs btn-primary" onclick='editAvis(<?= json_encode($avis) ?>)'>Modifier</a>
+									<a href="javascript:;" class="btn btn-xs btn-danger" onclick="confirmDeleteAvis(<?= $avis['id'] ?>)">Supprimer</a>
 								</td>
 							</tr>
-							<tr class="even gradeC">
-								<td class="f-w-600 text-inverse">2</td>
-								<td class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-2.jpg" class="img-rounded height-30" /></td>
-								<td>4</td>
-								<td>Interface claire et professionnelle.</td>
-								<td>
-									<a href="#modal-avis" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
-								</td>
-							</tr>
-							<tr class="odd gradeA">
-								<td class="f-w-600 text-inverse">3</td>
-								<td class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-3.jpg" class="img-rounded height-30" /></td>
-								<td>3</td>
-								<td>Bonne expérience globale, à améliorer sur la rapidité.</td>
-								<td>
-									<a href="#modal-avis" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
-								</td>
-							</tr>
+							<?php endforeach; ?>
 						</tbody>
 					</table>
 				</div>
@@ -94,39 +91,77 @@
 		</div>
 	</div>
 
-	<!-- ================== Modal Ajouter Annonce ================== -->
+	<!-- MODAL AJOUT -->
 <div class="modal fade" id="modal-avis">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Ajouter un avis</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				</div>
-				<form action="liste.php" method="post">
-					<div class="modal-body">
-						<div class="form-group">
-							<label>Note</label>
-							<select name="note" class="form-control">
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5" selected>5</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label>Commentaire</label>
-							<textarea name="commentaire" class="form-control" rows="4" placeholder="Commentaire"></textarea>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-						<button type="submit" class="btn btn-primary">Enregistrer</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="avisMainController" method="post" id="addAvisForm">
+                <div class="modal-header"><h4 class="modal-title">Ajouter un avis</h4></div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Annonce concernée</label>
+                        <select name="annonce_id" class="form-control" required>
+                            <?php foreach($annonces as $a): ?>
+                                <option value="<?= $a['id'] ?>"><?= $a['titre'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Note</label>
+                        <select name="note" class="form-control">
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Très bien</option>
+                            <option value="3">3 - Moyen</option>
+                            <option value="2">2 - Mauvais</option>
+                            <option value="1">1 - Horrible</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Commentaire</label>
+                        <textarea name="commentaire" id="commentaire" class="form-control" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="frmAddAvis" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL MODIFIER -->
+<div class="modal fade" id="modal-edit-avis">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="avisMainController" method="post">
+                <div class="modal-header"><h4 class="modal-title">Modifier l'avis</h4></div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="edit_id">
+                    <div class="form-group">
+                        <label>Annonce</label>
+                        <select name="annonce_id" id="edit_annonce_id" class="form-control">
+                            <?php foreach($annonces as $a): ?>
+                                <option value="<?= $a['id'] ?>"><?= $a['titre'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Note</label>
+                        <select name="note" id="edit_note" class="form-control">
+                            <option value="5">5</option><option value="4">4</option>
+                            <option value="3">3</option><option value="2">2</option><option value="1">1</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Commentaire</label>
+                        <textarea name="commentaire" id="edit_commentaire" class="form-control" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="submit" name="frmEditAvis" class="btn btn-warning">Modifier</button></div>
+            </form>
+        </div>
+    </div>
+</div>
 
 	<?php require_once("../../../sections/admin/config.php"); ?>
 	<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fad+e" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>

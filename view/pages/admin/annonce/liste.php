@@ -1,7 +1,25 @@
+<?php
+require_once("../../../../model/AnnonceRepository.php");
+require_once("../../../../model/CategorieRepository.php");
+require_once("../../../../model/ZoneRepository.php");
+
+$annonceRepo = new AnnonceRepository();
+$catRepo = new CategorieRepository();
+$zoneRepo = new ZoneRepository();
+
+// Données pour le tableauD
+$annonces = $annonceRepo->getAllAnnoncesWithDetails();
+
+// Données pour les <select> de la modale
+$categories = $catRepo->getAll();
+$zones = $zoneRepo->getAll();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 	<!-- ================== section HEAD ================== -->
 	<?php require_once("../../../sections/admin/head.php"); ?>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	
 <body>
 	<!-- ================== section page loader ================== -->
@@ -22,9 +40,9 @@
 		 <div id="content" class="content">
 			<!-- begin breadcrumb -->
 			<ol class="breadcrumb float-xl-right">
-				<!-- <li class="breadcrumb-item">
+				<li class="breadcrumb-item">
 					<a href="#modal-annonce" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Ajouter</a>
-				</li> -->
+				</li>
 				<li class="breadcrumb-item"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Corbeille</a></li>
 				<li class="breadcrumb-item active"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Users</a></li>
 			</ol>
@@ -59,57 +77,46 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td class="f-w-600 text-inverse">1</td>
-								<td><strong>Développeur Web Full Stack</strong><br><small class="text-muted">Publié il y a 2 jours</small></td>
-								<td>Créer et maintenir des applications web modernes avec PHP, MySQL et Bootstrap.</td>
-								<td>1 500 000 FCFA</td>
-								<td><span class="badge badge-success">Ouverte</span></td>
-								<td>
-										<a href="#" class="btn btn-xs btn-info" title="Voir l'annonce"><i class="fa fa-eye"></i> Voir</a>
-										<!--<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>-->
-										<a href="#" class="btn btn-xs btn-danger" title="Supprimer l'annonce"><i class="fa fa-trash"></i> Supprimer</a>
-								</td>
-							</tr>
-							<tr>
-								<td class="f-w-600 text-inverse">2</td>
-								<td><strong>Analyste Data</strong><br><small class="text-muted">Publié il y a 5 jours</small></td>
-								<td>Analyser les données métier et produire des tableaux de bord utiles à la direction.</td>
-								<td>1 200 000 FCFA</td>
-								<td><span class="badge badge-info">Ouverte</span></td>
-								<td>
-										<a href="#" class="btn btn-xs btn-info" title="Voir l'annonce"><i class="fa fa-eye"></i> Voir</a>
-										<!--<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>-->
-										<a href="#" class="btn btn-xs btn-danger" title="Supprimer l'annonce"><i class="fa fa-trash"></i> Supprimer</a>
-										
-								</td>
-							</tr>
-							<tr>
-								<td class="f-w-600 text-inverse">3</td>
-								<td><strong>Designer UI/UX</strong><br><small class="text-muted">Publié hier</small></td>
-								<td>Concevoir des interfaces modernes et améliorer l’expérience utilisateur des produits digitaux.</td>
-								<td>950 000 FCFA</td>
-								<td><span class="badge badge-warning">Pourvue</span></td>
-								<td>
-										<a href="#" class="btn btn-xs btn-info" title="Voir l'annonce"><i class="fa fa-eye"></i> Voir</a>
-										<!--<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>-->
-										<a href="#" class="btn btn-xs btn-danger" title="Supprimer l'annonce"><i class="fa fa-trash"></i> Supprimer</a>
-										
-								</td>
-							</tr>
-							<tr>
-								<td class="f-w-600 text-inverse">4</td>
-								<td><strong>Responsable Marketing Digital</strong><br><small class="text-muted">Publié il y a 1 semaine</small></td>
-								<td>Gérer les campagnes digitales, le contenu et l’acquisition de nouveaux clients.</td>
-								<td>1 300 000 FCFA</td>
-								<td><span class="badge badge-danger">Annulée</span></td>
-								<td>
-										<a href="#" class="btn btn-xs btn-info" title="Voir l'annonce"><i class="fa fa-eye"></i> Voir</a>
-										<!--<a href="#" class="btn btn-xs btn-warning" title="Modifier l'annonce"><i class="fa fa-edit"></i> Modifier</a>-->
-										<a href="#" class="btn btn-xs btn-danger" title="Supprimer l'annonce"><i class="fa fa-trash"></i> Supprimer</a>
-								</td>
-							</tr>
-							
+							<?php if (!empty($annonces)): ?>
+								<?php foreach ($annonces as $index => $annonce): ?>
+									<tr>
+										<td class="f-w-600 text-inverse"><?= $index + 1 ?></td>
+										<td>
+											<strong><?= htmlspecialchars($annonce['titre']) ?></strong><br>
+											<small class="text-muted">
+												Catégorie : <?= htmlspecialchars($annonce['categorie_nom'] ?? 'N/A') ?> | 
+												Zone : <?= htmlspecialchars($annonce['nom_quartier'] ?? 'N/A') ?>
+											</small><br>
+											<small class="text-info">Publié le <?= date('d/m/Y', strtotime($annonce['created_at'])) ?></small>
+										</td>
+										<td><?= nl2br(htmlspecialchars(substr($annonce['description'], 0, 100))) ?>...</td>
+										<td><?= number_format($annonce['salaire'], 0, ',', ' ') ?> FCFA</td>
+										<td>
+											<?php 
+												$badgeClass = 'badge-success'; // Défaut Ouvert
+												if($annonce['statut'] == 'Pourvu') $badgeClass = 'badge-warning';
+												if($annonce['statut'] == 'Annule') $badgeClass = 'badge-danger';
+											?>
+											<span class="badge <?= $badgeClass ?>"><?= $annonce['statut'] ?></span>
+										</td>
+										<td>
+											<a href="#modal-edit-annonce" 
+												data-toggle="modal" 
+												class="btn btn-xs btn-warning" 
+												onclick="editAnnonce(<?= htmlspecialchars(json_encode($annonce)) ?>)">
+												<i class="fa fa-edit"></i> Modifier
+											</a>
+											<a href="javascript:;" onclick="confirmDelete(<?= $annonce['id'] ?>)" class="btn btn-xs btn-danger" title="Supprimer">
+												<i class="fa fa-trash"></i> Supprimer
+											</a>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							<?php else: ?>
+								<tr>
+									<td colspan="6" class="text-center">Aucune annonce trouvée dans la base de données.</td>
+								</tr>
+							<?php endif; ?>
 						</tbody>
 					</table>
 				</div>
@@ -121,8 +128,7 @@
 		<!-- ================== section scroll to top ================== -->
 		<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
 	</div>
-<!-- ==================  JS ================== -->
-	<?php require_once("../../../sections/admin/script.php"); ?>
+
 	<!-- ================== Modal Ajouter Annonce ================== -->
 	<div class="modal fade" id="modal-annonce" tabindex="-1" aria-labelledby="modal-annonce-label" aria-hidden="true"> 
 		<div class="modal-dialog">
@@ -133,29 +139,31 @@
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				</div>
 
-				<form action="#"  method="POST">
+			<form action="annonceMainController"  method="POST" id="addAnnonceFrom">
 					<div  class="modal-body">
-
 						<!-- Titre -->
 						<div class="form-group">
 							<label for="titre">Titre</label>
 							<input type="text" class="form-control" id="titre" name="titre" required>
+							<p class="error-message mt-2"></p>
 						</div>
 
 						<!-- Description -->
 						<div class="form-group">
 							<label for="description">Description</label>
 							<textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+							<p class="error-message mt-2"></p>
 						</div>
 
 						<!-- Salaire -->
 						<div class="form-group">
 							<label for="salaire">Salaire</label>
 							<input type="number" class="form-control" id="salaire" name="salaire" min="0" required>
+							<p class="error-message mt-2"></p>
 						</div>
 
-						<!-- Statut -->
-						<div class="form-group">
+						<!--Statut-->
+						<!-- <div class="form-group">
 							<label for="status">Statut</label>
 							<select class="form-control" id="status" name="status" required>
 								<option value="">-- Sélectionner --</option>
@@ -163,13 +171,38 @@
 								<option value="pourvu">Pourvue</option>
 								<option value="annule">Annulée</option>
 							</select>
+							<p class="error-message mt-2"></p>
+						</div>  -->
+
+						<!-- Catégorie -->
+						<div class="form-group">
+							<label for="categorie_id">Catégorie</label>
+							<select class="form-control" id="categorie_id" name="categorie_id" required>
+								<option value="">-- Choisir une catégorie --</option>
+								<?php foreach($categories as $cat): ?>
+									<option value="<?= $cat['id'] ?>"><?= $cat['nom'] ?></option>
+								<?php endforeach; ?>
+							</select>
+							<p class="error-message mt-2"></p>
 						</div>
 
+						<!-- Zone -->
+						<div class="form-group">
+							<label for="zone_id">Zone / Quartier</label>
+							<select class="form-control" id="zone_id" name="zone_id" required>
+								<option value="">-- Choisir une zone --</option>
+								<?php foreach($zones as $z): ?>
+									<option value="<?= $z['id'] ?>"><?= $z['nom_quartier'] ?></option>
+								<?php endforeach; ?>
+							</select>
+							<p class="error-message mt-2"></p>
+						</div>
 					</div>
 
+					<!--Soumission-->
 					<div class="modal-footer">
-						<button type="submit" class="btn btn-primary">Ajouter</button>
-						<button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+						<button type="submit" name="frmAddAnnonce" class="btn btn-primary fw-bold">Ajouter</button>
+						<button type="button" class="btn btn-danger fw-bold" data-dismiss="modal">Annuler</button>
 					</div>
 					
 				</form>
@@ -177,8 +210,76 @@
 			</div>
 		</div>
 	</div>
-	<!-- ================== section config ================== -->
+
+	<!-- ================== Modal Modifier Annonce ================== -->
+	<div class="modal fade" id="modal-edit-annonce" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Modifier l'annonce</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				</div>
+				<form action="annonceMainController" method="POST" id="editAnnonceForm">
+					<div class="modal-body">
+						
+						<input type="hidden" name="id" id="edit_id">
+
+						<div class="form-group">
+							<label>Titre</label>
+							<input type="text" class="form-control" id="edit_titre" name="titre" required>
+							<p class="error-message mt-2"></p>
+						</div>
+
+						<div class="form-group">
+							<label>Description</label>
+							<textarea class="form-control" id="edit_description" name="description" rows="4" required></textarea>
+							<p class="error-message mt-2"></p>
+						</div>
+
+						<div class="form-group">
+							<label>Salaire</label>
+							<input type="number" class="form-control" id="edit_salaire" name="salaire" required>
+							<p class="error-message mt-2"></p>
+						</div>
+
+						<div class="form-group">
+							<label>Catégorie</label>
+							<select class="form-control" id="edit_categorie_id" name="categorie_id" required>
+								<?php foreach($categories as $cat): ?>
+									<option value="<?= $cat['id'] ?>"><?= $cat['nom'] ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label>Zone</label>
+							<select class="form-control" id="edit_zone_id" name="zone_id" required>
+								<?php foreach($zones as $z): ?>
+									<option value="<?= $z['id'] ?>"><?= $z['nom_quartier'] ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label>Statut</label>
+							<select class="form-control" id="edit_statut" name="statut" required>
+								<option value="Ouvert">Ouverte</option>
+								<option value="Pourvu">Pourvue</option>
+								<option value="Annule">Annulée</option>
+							</select>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="submit" name="frmEditAnnonce" class="btn btn-warning fw-bold">Enregistrer les modifications</button>
+						<button type="button" class="btn btn-default fw-bold" data-dismiss="modal">Fermer</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- ================== section JS ================== -->
 	<?php require_once("../../../sections/admin/config.php"); ?>
+	<?php require_once("../../../sections/admin/script.php"); ?>
 	
 </body>
 </html>

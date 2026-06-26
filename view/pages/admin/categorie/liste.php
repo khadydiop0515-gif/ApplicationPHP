@@ -1,3 +1,9 @@
+<?php
+require_once("../../../../model/CategorieRepository.php");
+$repo = new CategorieRepository();
+$categories = $repo->getAll();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 	<!-- ================== section HEAD ================== -->
@@ -56,65 +62,75 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr class="odd gradeX">
-								<td width="1%" class="f-w-600 text-inverse">1</td>
-								<td width="1%" class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-1.jpg" class="img-rounded height-30" /></td>
-								<td>Informatique</td>
-								<td>
-									<a href="#modal-categorie" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
-								</td>
-							</tr>
-							<tr class="even gradeC">
-								<td class="f-w-600 text-inverse">2</td>
-								<td class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-2.jpg" class="img-rounded height-30" /></td>
-								<td>Marketing</td>
-								<td>
-									<a href="#modal-categorie" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
-								</td>
-							</tr>
-							<tr class="odd gradeA">
-								<td class="f-w-600 text-inverse">3</td>
-								<td class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-3.jpg" class="img-rounded height-30" /></td>
-								<td>Design</td>
-								<td>
-									<a href="#modal-categorie" class="btn btn-xs btn-primary" data-toggle="modal">Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger">Supprimer</a>
-								</td>
-							</tr>
+							<?php if (!empty($categories)): ?>
+								<?php foreach ($categories as $index => $cat): ?>
+									<tr>
+										<td width="1%" class="f-w-600 text-inverse"><?= $index + 1 ?></td>
+										<td width="1%"><i class="fa fa-folder text-warning fa-lg"></i></td>
+										<td><strong><?= htmlspecialchars($cat['nom']) ?></strong></td>
+										<td>
+											<a href="#modal-edit-categorie" data-toggle="modal" class="btn btn-xs btn-primary" 
+											onclick='editCategorie(<?= json_encode($cat) ?>)'>
+												<i class="fa fa-edit"></i> Modifier
+											</a>
+											<a href="javascript:;" class="btn btn-xs btn-danger" 
+											onclick="confirmDeleteCategorie(<?= $cat['id'] ?>)">
+												<i class="fa fa-trash"></i> Supprimer
+											</a>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							<?php endif; ?>
 						</tbody>
 					</table>
 				</div>
 			</div>
 		</div>
 	</div>
-<!-- ================== Modal Ajouter ================== -->
-	<div class="modal fade" id="modal-categorie">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">Ajouter une catégorie</h4>
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				</div>
-				<form action="liste.php" method="post">
-					<div class="modal-body">
-						<div class="form-group">
-							<label>Nom</label>
-							<input type="text" name="nom" class="form-control" placeholder="Nom de la catégorie" />
+		<!-- ================== modal ajout categorie ================== -->
+		<div class="modal fade" id="modal-categorie">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form action="categorieMainController" method="POST">
+						<div class="modal-header"><h4 class="modal-title">Ajouter une catégorie</h4></div>
+						<div class="modal-body">
+							<div class="form-group">
+								<label>Nom de la catégorie</label>
+								<input type="text" name="nom" class="form-control" required placeholder="Ex: Informatique" />
+							</div>
 						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-						<button type="submit" class="btn btn-primary">Enregistrer</button>
-					</div>
-				</form>
+						<div class="modal-footer">
+							<button type="submit" name="frmAddCategorie" class="btn btn-primary">Enregistrer</button>
+						</div>
+					</form>
+				</div>
 			</div>
 		</div>
-	</div>
+
+		<!-- ================== modal modifier categorie ================== -->
+		<div class="modal fade" id="modal-edit-categorie">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form action="categorieMainController" method="POST">
+						<div class="modal-header"><h4 class="modal-title">Modifier la catégorie</h4></div>
+						<div class="modal-body">
+							<input type="hidden" name="id" id="edit_cat_id">
+							<div class="form-group">
+								<label>Nom</label>
+								<input type="text" name="nom" id="edit_cat_nom" class="form-control" required />
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="submit" name="frmEditCategorie" class="btn btn-warning">Mettre à jour</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 
 	<?php require_once("../../../sections/admin/config.php"); ?>
 	<a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
 	<?php require_once("../../../sections/admin/script.php"); ?>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

@@ -63,14 +63,14 @@
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 					<img src="public/templates/templateAdmin/assets/img/user/user-13.jpg" alt="" /> 
 					<span class="d-none d-md-inline">
-    <?php 
-        if(isset($_SESSION['prenom']) && isset($_SESSION['nom'])) {
-            echo htmlspecialchars($_SESSION['prenom'] . ' ' . $_SESSION['nom']);
-        } else {
-            echo "Utilisateur";
-        }
-    ?>
-</span> <b class="caret"></b>
+						<?php 
+							if(isset($_SESSION['prenom']) && isset($_SESSION['nom'])) {
+								echo htmlspecialchars($_SESSION['prenom'] . ' ' . $_SESSION['nom']);
+							} else {
+								echo "Utilisateur";
+							}
+						?>
+					</span> <b class="caret"></b>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
 					<a href="javascript:;" class="dropdown-item">Profil</a>
