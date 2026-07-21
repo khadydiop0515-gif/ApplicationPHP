@@ -69,12 +69,19 @@
 
 					<!-- ====== Utilisateur ===== -->
 					<li class="has-sub">
-						<a href="ListeUtilisateur">
+						<a href="ListeEtudiant">
 							<i class="fa fa-users"></i>
-							<span>Étudiants & prestataires</span>
+							<span>Étudiants</span>
 						</a>
 					</li>
-
+					
+					<!-- ====== Prestataire ===== -->
+					<li class="has-sub">
+						<a href="ListePrestataire">
+							<i class="fa fa-user-tie"></i>
+							<span>Prestataires</span>
+						</a>
+					</li>
 					<!-- ====== Zone ===== -->
 					<li class="has-sub">
 						<a href="ListeZone">

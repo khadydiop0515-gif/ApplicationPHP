@@ -33,5 +33,11 @@
         error_log("Erreur de connexion à la DB : " . $error->getMessage());
         die("Une erreur est survenue lors de la connexion à la base de données.");
     }
+
+    // Ajout de cette méthode pour que les enfants puissent accéder à PDO
+    public function getConnection() 
+    {
+        return $this->db;
+    }
 }
 ?> 

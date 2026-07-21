@@ -25,4 +25,8 @@ if (isset($_POST['frmEditZone'])) {
 if (isset($_GET['delete_id'])) {
     $candCtrl->deleteZone($_GET['delete_id']);
 }
+
+
+if (isset($_GET['restore_id'])) $zoneCtrl->restoreZone($_GET['restore_id']);
+if (isset($_GET['permanent_delete_id'])) $zoneCtrl->permanentDelete($_GET['permanent_delete_id']);
 ?>

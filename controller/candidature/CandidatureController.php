@@ -1,6 +1,7 @@
 <?php
 require_once("../../model/CandidatureRepository.php");
 
+require_once("../../controller/MailService.php");
 class CandidatureController
 {
     private $candidatureRepository;
@@ -58,15 +59,55 @@ class CandidatureController
         }
     }
 
-    public function deleteCandidature($id)
-    {
-        try {
-            $res = $this->candidatureRepository->desactivate($id);
-            if ($res) {
-                $this->redirect('succes', "Candidature supprimée.", "Suppression");
-            }
-        } catch (Exception $e) {
-            $this->redirect('error', "Erreur lors de la suppression.", "Erreur");
+  
+    // À ajouter dans la classe CandidatureController
+
+public function restoreCandidature($id)
+{
+    try {
+        if ($this->candidatureRepository->activate($id)) {
+            $this->redirect('succes', "Candidature restaurée avec succès.", "Restauration", "CorbeilleCandidature");
         }
+    } catch (Exception $e) {
+        $this->redirect('error', "Erreur : " . $e->getMessage(), "Erreur", "CorbeilleCandidature");
     }
+}
+
+public function permanentDelete($id)
+{
+    try {
+        if ($this->candidatureRepository->delete($id)) {
+            $this->redirect('succes', "Candidature supprimée définitivement.", "Supprimé", "CorbeilleCandidature");
+        }
+    } catch (Exception $e) {
+        $this->redirect('error', "Erreur fatale lors de la suppression.", "Erreur", "CorbeilleCandidature");
+    }
+}
+
+
+public function deleteCandidature($id, $motif)
+{
+    try {
+        // 1. On récupère les infos pour le mail (Email étudiant + Titre annonce)
+        $details = $this->candidatureRepository->getCandidatureDetails($id);
+
+        // 2. Désactivation en base
+        $res = $this->candidatureRepository->desactivate($id, $motif);
+
+        if ($res && $details) {
+            // 3. Envoi du mail
+            $sujet = "Information sur votre candidature : " . $details['annonce_titre'];
+            $corps = "Bonjour " . htmlspecialchars($details['prenom']) . ",<br><br>
+                      Nous vous informons que votre candidature pour l'offre <b>'".$details['annonce_titre']."'</b> a été retirée par l'administration.<br><br>
+                      <b>Motif :</b><br>
+                      <blockquote style='color: #555;'>$motif</blockquote>";
+            
+            MailService::sendNotification($details['email'], $sujet, $corps);
+
+            $this->redirect('succes', "Candidature supprimée et étudiant notifié.", "Succès");
+        }
+    } catch (Exception $e) {
+        $this->redirect('error', "Erreur : " . $e->getMessage(), "Erreur");
+    }
+}
 }

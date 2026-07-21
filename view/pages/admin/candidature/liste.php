@@ -8,7 +8,7 @@ $annRepo = new AnnonceRepository();
 $userRepo = new UserRepository();
 
 $candidatures = $repo->getAllWithDetails();
-$annonces = $annRepo->getAllAnnonces('Ouvert');
+$annonces = $annRepo->getAllAnnoncesWithDetails(); // Utilise la nouvelle méthode
 $etudiants = $userRepo->getAll(); // Récupère tous les utilisateurs actifs
 ?>
 <!DOCTYPE html>
@@ -34,11 +34,12 @@ $etudiants = $userRepo->getAll(); // Récupère tous les utilisateurs actifs
         <div id="content" class="content">
             <!-- begin breadcrumb -->
 			<ol class="breadcrumb float-xl-right">
-				<li class="breadcrumb-item">
+				<!--<li class="breadcrumb-item">
 					<a href="#modal-add-candidature" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Ajouter</a>
-				</li>
-				<li class="breadcrumb-item"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold">Corbeille</a></li>
-				<li class="breadcrumb-item active"><a href="ListeUtilisateur" class="btn btn-sm btn-dark text-white fw-bold">Users</a></li>
+				</li>-->
+				<li class="breadcrumb-item"><a href="CorbeilleCandidature" class="btn btn-sm btn-dark text-white fw-bold">Corbeille</a></li>
+				<li class="breadcrumb-item active"><a href="ListeEtudiant" class="btn btn-sm btn-dark text-white fw-bold">Étudiants</a></li>
+				<li class="breadcrumb-item"><a href="ListePrestataire" class="btn btn-sm btn-dark text-white fw-bold">Prestataires</a></li>
 			</ol>
 			<!-- end breadcrumb -->
             
@@ -80,9 +81,9 @@ $etudiants = $userRepo->getAll(); // Récupère tous les utilisateurs actifs
                                         <small class="text-muted"><?= nl2br(htmlspecialchars(substr($c['message_motivation'], 0, 60))) ?>...</small>
                                     </td>
                                     <td>
-                                        <a href="#modal-edit-candidature" data-toggle="modal" class="btn btn-xs btn-primary" onclick='editCandidature(<?= json_encode($c) ?>)'>
+                                        <!--<a href="#modal-edit-candidature" data-toggle="modal" class="btn btn-xs btn-primary" onclick='editCandidature(<?= json_encode($c) ?>)'>
                                             <i class="fa fa-edit"></i> Modifier
-                                        </a>
+                                        </a>-->
                                         <a href="javascript:;" class="btn btn-xs btn-danger" onclick="confirmDeleteCandidature(<?= $c['id'] ?>)">
                                             <i class="fa fa-trash"></i> Supprimer
                                         </a>

@@ -3,10 +3,10 @@ require_once("DBRepository.php");
 
 class CategorieRepository extends DBRepository
 {
-    // Récupérer toutes les catégories
+    // Récupérer uniquement les catégories actives
     public function getAll()
     {
-        $sql = "SELECT * FROM categorie ORDER BY nom ASC";
+        $sql = "SELECT * FROM categorie WHERE etat = 1 ORDER BY nom ASC";
         try {
             return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -15,58 +15,72 @@ class CategorieRepository extends DBRepository
         }
     }
 
-    // Récupérer une catégorie par son ID
-    public function getById(int $id)
+    // Récupérer les catégories dans la corbeille
+    public function getTrash()
     {
-        $sql = "SELECT * FROM categorie WHERE id = :id";
+        $sql = "SELECT * FROM categorie WHERE etat = 0 ORDER BY nom ASC";
         try {
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute(['id' => $id]);
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+            return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Erreur getById Categorie : " . $e->getMessage());
-            return null;
+            return [];
         }
     }
 
-    // Ajouter une nouvelle catégorie
     public function add(string $nom)
     {
-        $sql = "INSERT INTO categorie (nom, created_at) VALUES (:nom, NOW())";
+        // On force l'état à 1 à l'ajout
+        $sql = "INSERT INTO categorie (nom, etat, created_at) VALUES (:nom, 1, NOW())";
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute(['nom' => $nom]);
-            return $this->db->lastInsertId();
+            return $stmt->execute(['nom' => $nom]);
         } catch (PDOException $e) {
-            error_log("Erreur add Categorie : " . $e->getMessage());
             throw $e;
         }
     }
 
-    // Modifier une catégorie
-    public function update(int $id, string $nom)
+    // Envoyer en corbeille (Soft Delete)
+    public function desactivate(int $id)
     {
-        $sql = "UPDATE categorie SET nom = :nom, updated_at = NOW() WHERE id = :id";
+        $sql = "UPDATE categorie SET etat = 0 WHERE id = :id";
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute(['nom' => $nom, 'id' => $id]);
-            return $stmt->rowCount() > 0;
+            return $stmt->execute(['id' => $id]);
         } catch (PDOException $e) {
-            error_log("Erreur update Categorie : " . $e->getMessage());
             throw $e;
         }
     }
 
-    // Supprimer une catégorie
+    // Restaurer
+    public function activate(int $id)
+    {
+        $sql = "UPDATE categorie SET etat = 1 WHERE id = :id";
+        try {
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute(['id' => $id]);
+        } catch (PDOException $e) {
+            throw $e;
+        }
+    }
+
+    // Suppression définitive
     public function delete(int $id)
     {
         $sql = "DELETE FROM categorie WHERE id = :id";
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute(['id' => $id]);
-            return $stmt->rowCount() > 0;
+            return $stmt->execute(['id' => $id]);
         } catch (PDOException $e) {
-            error_log("Erreur delete Categorie : " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function update(int $id, string $nom)
+    {
+        $sql = "UPDATE categorie SET nom = :nom, updated_at = NOW() WHERE id = :id";
+        try {
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute(['nom' => $nom, 'id' => $id]);
+        } catch (PDOException $e) {
             throw $e;
         }
     }

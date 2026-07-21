@@ -90,9 +90,71 @@ class UserRepository extends DBRepository
     }
 
     // Désactivation (Soft Delete via la colonne etat)
-    public function deactivate($id) {
-        $sql = "UPDATE users SET etat = 0 WHERE id = :id";
+    public function deactivate($id, $motif) {
+    $sql = "UPDATE users SET etat = 0, motif_suppression = :motif WHERE id = :id";
+    try {
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'id' => $id, 
+            'motif' => $motif
+        ]);
+    } catch (PDOException $e) {
+        return false;
+    }
+}
+
+    
+    public function getByRole($role) {
+        $sql = "SELECT * FROM users WHERE role = :role AND etat = 1 ORDER BY created_at DESC";
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['role' => $role]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Erreur getByRole : " . $e->getMessage());
+            return [];
+        }
+    }
+
+    // Dans model/UserRepository.php (à ajouter dans la classe)
+
+/**
+ * Récupérer les utilisateurs supprimés (corbeille) par rôle
+ */
+public function getTrashByRole($role) {
+    $sql = "SELECT * FROM users WHERE role = :role AND etat = 0 ORDER BY updated_at DESC";
+    try {
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['role' => $role]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+/**
+ * Restaurer un utilisateur (etat = 1)
+ */
+public function activate($id) {
+    $sql = "UPDATE users SET etat = 1 WHERE id = :id";
+    try {
         $stmt = $this->db->prepare($sql);
         return $stmt->execute(['id' => $id]);
+    } catch (PDOException $e) {
+        return false;
     }
+}
+
+/**
+ * Suppression réelle de la base de données
+ */
+public function deletePermanently($id) {
+    $sql = "DELETE FROM users WHERE id = :id";
+    try {
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['id' => $id]);
+    } catch (PDOException $e) {
+        return false;
+    }
+}
 }

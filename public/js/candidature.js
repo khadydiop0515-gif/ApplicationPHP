@@ -6,17 +6,27 @@ function editCandidature(data) {
 
 function confirmDeleteCandidature(id) {
     Swal.fire({
-        title: 'Supprimer cette candidature ?',
-        text: "Elle sera déplacée dans la corbeille.",
+        title: 'Motif de rejet/suppression',
+        input: 'textarea',
+        inputPlaceholder: 'Expliquez à l\'étudiant pourquoi sa candidature est retirée...',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ff5b57',
+        confirmButtonText: 'Supprimer et notifier',
         background: '#2d353c',
         color: '#fff',
-        confirmButtonText: 'Oui, supprimer'
+        preConfirm: (motif) => {
+            if (!motif || motif.trim().length < 5) {
+                Swal.showValidationMessage('Veuillez saisir un motif (5 caract. min)');
+            }
+            return motif;
+        }
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = "candidatureMainController?delete_id=" + id;
+            Swal.fire({ title: 'Traitement...', didOpen: () => { Swal.showLoading() } });
+            const motif = encodeURIComponent(result.value);
+            // Redirection vers le main controller
+            window.location.href = "candidatureMainController?delete_id=" + id + "&motif=" + motif;
         }
     });
 }

@@ -30,8 +30,9 @@ $categories = $repo->getAll();
 				<li class="breadcrumb-item">
 					<a href="#modal-categorie" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Ajouter</a>
 				</li>
-				<li class="breadcrumb-item"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Corbeille</a></li>
-				<li class="breadcrumb-item active"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Users</a></li>
+				<li class="breadcrumb-item"><a href="CorbeilleCategorie" class="btn btn-sm btn-dark text-white fw-bold">Corbeille</a></li>
+				<li class="breadcrumb-item active"><a href="ListeEtudiant" class="btn btn-sm btn-dark text-white fw-bold">Étudiants</a></li>
+				<li class="breadcrumb-item"><a href="ListePrestataire" class="btn btn-sm btn-dark text-white fw-bold">Prestataires</a></li>
 			</ol>
 			<!-- end breadcrumb -->
 			<!-- begin page-header -->

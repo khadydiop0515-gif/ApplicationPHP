@@ -3,10 +3,10 @@ require_once("DBRepository.php");
 
 class ZoneRepository extends DBRepository
 {
-    // Récupérer toutes les zones
+    // Récupérer uniquement les zones actives
     public function getAll()
     {
-        $sql = "SELECT * FROM zone ORDER BY nom_quartier ASC";
+        $sql = "SELECT * FROM zone WHERE etat = 1 ORDER BY nom_quartier ASC";
         try {
             return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -15,58 +15,72 @@ class ZoneRepository extends DBRepository
         }
     }
 
-    // Récupérer une zone par son ID
-    public function getById(int $id)
+    // Récupérer les zones dans la corbeille
+    public function getTrash()
     {
-        $sql = "SELECT * FROM zone WHERE id = :id";
+        $sql = "SELECT * FROM zone WHERE etat = 0 ORDER BY nom_quartier ASC";
         try {
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute(['id' => $id]);
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+            return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Erreur getById Zone : " . $e->getMessage());
-            return null;
+            return [];
         }
     }
 
-    // Ajouter une zone
     public function add(string $nom_quartier)
     {
-        $sql = "INSERT INTO zone (nom_quartier, created_at) VALUES (:nom, NOW())";
+        // On force l'état à 1 à l'ajout
+        $sql = "INSERT INTO zone (nom_quartier, etat, created_at) VALUES (:nom, 1, NOW())";
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute(['nom' => $nom_quartier]);
-            return $this->db->lastInsertId();
+            return $stmt->execute(['nom' => $nom_quartier]);
         } catch (PDOException $e) {
-            error_log("Erreur add Zone : " . $e->getMessage());
             throw $e;
         }
     }
 
-    // Modifier une zone
-    public function update(int $id, string $nom_quartier)
+    // Envoyer en corbeille (Soft Delete)
+    public function desactivate(int $id)
     {
-        $sql = "UPDATE zone SET nom_quartier = :nom, updated_at = NOW() WHERE id = :id";
+        $sql = "UPDATE zone SET etat = 0, updated_at = NOW() WHERE id = :id";
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute(['nom' => $nom_quartier, 'id' => $id]);
-            return $stmt->rowCount() > 0;
+            return $stmt->execute(['id' => $id]);
         } catch (PDOException $e) {
-            error_log("Erreur update Zone : " . $e->getMessage());
             throw $e;
         }
     }
 
-    // Supprimer une zone
+    // Restaurer
+    public function activate(int $id)
+    {
+        $sql = "UPDATE zone SET etat = 1, updated_at = NOW() WHERE id = :id";
+        try {
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute(['id' => $id]);
+        } catch (PDOException $e) {
+            throw $e;
+        }
+    }
+
+    // Suppression définitive
     public function delete(int $id)
     {
         $sql = "DELETE FROM zone WHERE id = :id";
         try {
             $stmt = $this->db->prepare($sql);
-            $stmt->execute(['id' => $id]);
-            return $stmt->rowCount() > 0;
+            return $stmt->execute(['id' => $id]);
         } catch (PDOException $e) {
-            error_log("Erreur delete Zone : " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function update(int $id, string $nom_quartier)
+    {
+        $sql = "UPDATE zone SET nom_quartier = :nom, updated_at = NOW() WHERE id = :id";
+        try {
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute(['nom' => $nom_quartier, 'id' => $id]);
+        } catch (PDOException $e) {
             throw $e;
         }
     }

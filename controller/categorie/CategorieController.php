@@ -5,10 +5,7 @@ class CategorieController
 {
     private $categorieRepository;
 
-    public function __construct()
-    {
-        $this->categorieRepository = new CategorieRepository();
-    }
+    public function __construct() { $this->categorieRepository = new CategorieRepository(); }
 
     private function redirect($type, $message, $title, $url = "ListeCategorie")
     {
@@ -17,59 +14,39 @@ class CategorieController
         exit;
     }
 
-    public function addCategorie()
-    {
-        if ($_SERVER["REQUEST_METHOD"] == 'POST') {
-            $nom = trim($_POST['nom'] ?? '');
+    public function addCategorie() {
+        $nom = trim($_POST['nom'] ?? '');
+        if (empty($nom)) $this->redirect('error', "Nom requis", "Erreur");
+        if ($this->categorieRepository->add($nom)) $this->redirect('succes', "Catégorie ajoutée", "Succès");
+    }
 
-            if (empty($nom)) {
-                $this->redirect('error', "Le nom de la catégorie est obligatoire.", "Champs vides");
-            }
+    public function updateCategorie() {
+        $id = $_POST['id']; $nom = trim($_POST['nom']);
+        if ($this->categorieRepository->update($id, $nom)) $this->redirect('succes', "Catégorie mise à jour", "Succès");
+    }
 
-            try {
-                $result = $this->categorieRepository->add($nom);
-                if ($result) {
-                    $this->redirect('succes', "La catégorie a été ajoutée.", "Succès");
-                }
-            } catch (Exception $e) {
-                $this->redirect('error', "Erreur : " . $e->getMessage(), "Erreur système");
-            }
+    // Supprimer (Envoyer en corbeille)
+    public function deleteCategorie($id) {
+        if ($this->categorieRepository->desactivate($id)) {
+            $this->redirect('succes', "Catégorie déplacée en corbeille", "Suppression");
         }
     }
 
-    public function updateCategorie()
-    {
-        if ($_SERVER["REQUEST_METHOD"] == 'POST') {
-            $id = $_POST['id'] ?? null;
-            $nom = trim($_POST['nom'] ?? '');
-
-            if (!$id || empty($nom)) {
-                $this->redirect('error', "Données incomplètes.", "Erreur");
-            }
-
-            try {
-                $result = $this->categorieRepository->update($id, $nom);
-                if ($result) {
-                    $this->redirect('succes', "La catégorie a été mise à jour.", "Succès");
-                } else {
-                    $this->redirect('error', "Aucune modification effectuée.", "Info");
-                }
-            } catch (Exception $e) {
-                $this->redirect('error', "Erreur : " . $e->getMessage(), "Erreur");
-            }
+    // Restaurer
+    public function restoreCategorie($id) {
+        if ($this->categorieRepository->activate($id)) {
+            $this->redirect('succes', "Catégorie restaurée", "Succès", "CorbeilleCategorie");
         }
     }
 
-    public function deleteCategorie($id)
-    {
+    // Suppression réelle
+    public function permanentDelete($id) {
         try {
-            $result = $this->categorieRepository->delete($id);
-            if ($result) {
-                $this->redirect('succes', "Catégorie supprimée définitivement.", "Suppression");
+            if ($this->categorieRepository->delete($id)) {
+                $this->redirect('succes', "Catégorie supprimée définitivement", "Supprimé", "CorbeilleCategorie");
             }
         } catch (Exception $e) {
-            // Souvent une erreur arrive ici si la catégorie est liée à une annonce (Clé étrangère)
-            $this->redirect('error', "Impossible de supprimer cette catégorie car elle est utilisée dans des annonces.", "Erreur de liaison");
+            $this->redirect('error', "Action impossible : liée à des annonces", "Erreur", "CorbeilleCategorie");
         }
     }
 }

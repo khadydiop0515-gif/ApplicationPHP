@@ -40,11 +40,12 @@ $zones = $zoneRepo->getAll();
 		 <div id="content" class="content">
 			<!-- begin breadcrumb -->
 			<ol class="breadcrumb float-xl-right">
-				<li class="breadcrumb-item">
+				<!--<li class="breadcrumb-item">
 					<a href="#modal-annonce" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Ajouter</a>
-				</li>
-				<li class="breadcrumb-item"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Corbeille</a></li>
-				<li class="breadcrumb-item active"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Users</a></li>
+				</li>-->
+				<li class="breadcrumb-item"><a href="CorbeilleAnnonce" class="btn btn-sm btn-dark text-white fw-bold">Corbeille</a></li>
+				<li class="breadcrumb-item active"><a href="ListeEtudiant" class="btn btn-sm btn-dark text-white fw-bold">Étudiants</a></li>
+				<li class="breadcrumb-item"><a href="ListePrestataire" class="btn btn-sm btn-dark text-white fw-bold">Prestataires</a></li>
 			</ol>
 			<!-- end breadcrumb -->
 			<!-- begin page-header -->
@@ -69,53 +70,84 @@ $zones = $zoneRepo->getAll();
 						<thead>
 							<tr>
 								<th width="1%">#</th>
-								<th class="text-nowrap">Titre</th>
+								<th class="text-nowrap">Titre & Catégorie</th>
 								<th class="text-nowrap">Description</th>
+								<th class="text-nowrap">Zone</th> <!-- Nouvelle Colonne dédiée -->
 								<th class="text-nowrap">Salaire</th>
+								<th class="text-nowrap">Avis (%)</th>
 								<th class="text-nowrap">Statut</th>
 								<th class="text-nowrap">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
 							<?php if (!empty($annonces)): ?>
-								<?php foreach ($annonces as $index => $annonce): ?>
+								<?php foreach ($annonces as $index => $annonce): 
+									// Calcul avis
+									$moyenne = $annonce['note_moyenne'] ?? 0;
+									$pourcentage = round(($moyenne / 5) * 100);
+									$totalAvis = $annonce['total_avis'];
+									
+									$barClass = 'bg-silver-darker'; // Gris si 0%
+									if($pourcentage > 0) $barClass = 'bg-danger';
+									if($pourcentage >= 50) $barClass = 'bg-warning';
+									if($pourcentage >= 80) $barClass = 'bg-success';
+								?>
 									<tr>
 										<td class="f-w-600 text-inverse"><?= $index + 1 ?></td>
+										
+										<!-- Titre et Catégorie uniquement -->
 										<td>
 											<strong><?= htmlspecialchars($annonce['titre']) ?></strong><br>
-											<small class="text-muted">
-												Catégorie : <?= htmlspecialchars($annonce['categorie_nom'] ?? 'N/A') ?> | 
-												Zone : <?= htmlspecialchars($annonce['nom_quartier'] ?? 'N/A') ?>
-											</small><br>
+											<small class="text-muted">Catégorie : <?= htmlspecialchars($annonce['categorie_nom'] ?? 'N/A') ?></small><br>
 											<small class="text-info">Publié le <?= date('d/m/Y', strtotime($annonce['created_at'])) ?></small>
 										</td>
-										<td><?= nl2br(htmlspecialchars(substr($annonce['description'], 0, 100))) ?>...</td>
-										<td><?= number_format($annonce['salaire'], 0, ',', ' ') ?> FCFA</td>
+
+										<td><?= nl2br(htmlspecialchars(substr($annonce['description'], 0, 70))) ?>...</td>
+
+										<!-- COLONNE ZONE DÉDIÉE -->
+										<td class="text-nowrap">
+											<i class="fa fa-map-marker-alt text-danger m-r-5"></i> 
+											<span class="f-w-600 text-inverse"><?= htmlspecialchars($annonce['nom_quartier'] ?? 'Non définie') ?></span>
+										</td>
+
+										
+										
+										<td class="text-nowrap f-w-600 text-inverse">
+											<?= number_format($annonce['salaire'], 0, ',', ' ') ?> <small>FCFA</small>
+										</td>
+										
+										<!-- Avis -->
+										<td style="min-width: 130px;">
+											<div class="d-flex align-items-center">
+												<div class="progress progress-xs width-100 m-r-10" style="height: 8px; flex: 1; background: #eee;">
+													<div class="progress-bar <?= $barClass ?>" style="width: <?= $pourcentage ?>%"></div>
+												</div>
+												<small class='f-w-700 text-inverse'><?= $pourcentage ?>%</small>
+											</div>
+											<small class="text-muted"><?= $totalAvis ?> avis</small>
+										</td>
+
 										<td>
 											<?php 
-												$badgeClass = 'badge-success'; // Défaut Ouvert
+												$badgeClass = 'badge-success';
 												if($annonce['statut'] == 'Pourvu') $badgeClass = 'badge-warning';
 												if($annonce['statut'] == 'Annule') $badgeClass = 'badge-danger';
 											?>
-											<span class="badge <?= $badgeClass ?>"><?= $annonce['statut'] ?></span>
+											<span class="badge <?= $badgeClass ?> p-5" style="min-width: 60px;"><?= $annonce['statut'] ?></span>
 										</td>
-										<td>
-											<a href="#modal-edit-annonce" 
-												data-toggle="modal" 
-												class="btn btn-xs btn-warning" 
-												onclick="editAnnonce(<?= htmlspecialchars(json_encode($annonce)) ?>)">
-												<i class="fa fa-edit"></i> Modifier
-											</a>
-											<a href="javascript:;" onclick="confirmDelete(<?= $annonce['id'] ?>)" class="btn btn-xs btn-danger" title="Supprimer">
-												<i class="fa fa-trash"></i> Supprimer
+										
+										<td class="text-nowrap">
+											<!--<a href="#modal-edit-annonce" data-toggle="modal" class="btn btn-xs btn-warning" onclick="editAnnonce(<?= htmlspecialchars(json_encode($annonce)) ?>)">
+												<i class="fa fa-edit"></i>
+											</a>-->
+											<a href="javascript:;" onclick="confirmDelete(<?= $annonce['id'] ?>)" class="btn btn-lg btn-danger">
+												<i class="fa fa-trash"></i>
 											</a>
 										</td>
 									</tr>
 								<?php endforeach; ?>
 							<?php else: ?>
-								<tr>
-									<td colspan="6" class="text-center">Aucune annonce trouvée dans la base de données.</td>
-								</tr>
+								<tr><td colspan="8" class="text-center">Aucune annonce trouvée.</td></tr>
 							<?php endif; ?>
 						</tbody>
 					</table>

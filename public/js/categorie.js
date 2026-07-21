@@ -6,12 +6,12 @@ function editCategorie(data) {
 function confirmDeleteCategorie(id) {
     Swal.fire({
         title: 'Êtes-vous sûr ?',
-        text: "Cette catégorie sera supprimée définitivement !",
+        text: "La catégorie sera désactivée et ne sera plus visible pour les utilisateurs !",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ff5b57',
         cancelButtonColor: '#348fe2',
-        confirmButtonText: 'Oui, supprimer',
+        confirmButtonText: 'Oui, désactiver',
         cancelButtonText: 'Annuler',
         background: '#2d353c',
         color: '#fff'

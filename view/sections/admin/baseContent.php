@@ -39,8 +39,12 @@
 									<span class="badge badge-success">74</span>
 								</div>
 								<div class="list-group-item d-flex justify-content-between align-items-center">
-									<span><i class="fa fa-users text-info mr-2"></i> Utilisateurs</span>
+									<span><i class="fa fa-users text-info mr-2"></i> Étudiants</span>
 									<span class="badge badge-info">360</span>
+								</div>
+								<div class="list-group-item d-flex justify-content-between align-items-center">
+									<span><i class="fa fa-users text-warning mr-2"></i> Prestataires</span>
+									<span class="badge badge-warning">210</span>
 								</div>
 								<div class="list-group-item d-flex justify-content-between align-items-center">
 									<span><i class="fa fa-comments text-warning mr-2"></i> Avis récents</span>

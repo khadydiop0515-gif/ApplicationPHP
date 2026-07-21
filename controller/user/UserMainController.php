@@ -23,5 +23,16 @@ if (isset($_POST['frmEditUser'])) {
 }
 
 if (isset($_GET['delete_id'])) {
-    $controller->deleteUser($_GET['delete_id']);
+    $id = $_GET['delete_id'];
+    $motif = isset($_GET['motif']) ? urldecode($_GET['motif']) : "Non précisé";
+    $controller->deleteUser($id, $motif);
+}
+// Dans controller/user/UserMainController.php (à la fin)
+
+if (isset($_GET['restore_id'])) {
+    $controller->restoreUser($_GET['restore_id']);
+}
+
+if (isset($_GET['permanent_delete_id'])) {
+    $controller->permanentDelete($_GET['permanent_delete_id']);
 }

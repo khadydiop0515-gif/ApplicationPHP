@@ -33,7 +33,7 @@ function editAnnonce(data) {
     }, 200);
 }
 
-function confirmDelete(id) {
+/*function confirmDelete(id) {
     Swal.fire({
         title: 'Êtes-vous sûr ?',
         text: "Cette annonce sera déplacée dans la corbeille !",
@@ -41,7 +41,7 @@ function confirmDelete(id) {
         showCancelButton: true,
         confirmButtonColor: '#ff5b57',
         cancelButtonColor: '#348fe2',
-        confirmButtonText: '<i class="fa fa-trash"></i> Oui, supprimer',
+        confirmButtonText: '<i class="fa fa-trash"></i> Oui, Déplacer',
         cancelButtonText: 'Annuler',
         background: '#2d353c',
         color: '#fff'
@@ -55,8 +55,39 @@ function confirmDelete(id) {
             window.location.href = "annonceMainController?delete_id=" + id;
         }
     });
+}*/
+function confirmDelete(id) {
+    Swal.fire({
+        title: 'Motif de suppression',
+        input: 'textarea',
+        inputPlaceholder: 'Expliquez à l\'utilisateur pourquoi son annonce est supprimée...',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff5b57',
+        cancelButtonColor: '#348fe2',
+        confirmButtonText: '<i class="fa fa-trash"></i> Supprimer et notifier',
+        cancelButtonText: 'Annuler',
+        background: '#2d353c',
+        color: '#fff',
+        preConfirm: (motif) => {
+            if (!motif || motif.trim().length < 5) {
+                Swal.showValidationMessage('Veuillez saisir un motif d\'au moins 5 caractères');
+            }
+            return motif;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Traitement et envoi du mail...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading() }
+            });
+            // On envoie l'ID et le MOTIF encodé au contrôleur
+            const motif = encodeURIComponent(result.value);
+            window.location.href = "annonceMainController?delete_id=" + id + "&motif=" + motif;
+        }
+    });
 }
-
 // LOGIQUE DE VALIDATION
 document.addEventListener("DOMContentLoaded", function() {
 

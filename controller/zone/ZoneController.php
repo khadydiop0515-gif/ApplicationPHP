@@ -5,10 +5,7 @@ class ZoneController
 {
     private $zoneRepository;
 
-    public function __construct()
-    {
-        $this->zoneRepository = new ZoneRepository();
-    }
+    public function __construct() { $this->zoneRepository = new ZoneRepository(); }
 
     private function redirect($type, $message, $title, $url = "ListeZone")
     {
@@ -17,55 +14,39 @@ class ZoneController
         exit;
     }
 
-    public function addZone()
-    {
-        if ($_SERVER["REQUEST_METHOD"] == 'POST') {
-            $nom = trim($_POST['nom_quartier'] ?? '');
+    public function addZone() {
+        $nom = trim($_POST['nom_quartier'] ?? '');
+        if (empty($nom)) $this->redirect('error', "Nom requis", "Erreur");
+        if ($this->zoneRepository->add($nom)) $this->redirect('succes', "Zone ajoutée", "Succès");
+    }
 
-            if (empty($nom)) {
-                $this->redirect('error', "Le nom du quartier est obligatoire.", "Champs vides");
-            }
+    public function updateZone() {
+        $id = $_POST['id']; $nom = trim($_POST['nom_quartier']);
+        if ($this->zoneRepository->update($id, $nom)) $this->redirect('succes', "Zone mise à jour", "Succès");
+    }
 
-            try {
-                if ($this->zoneRepository->add($nom)) {
-                    $this->redirect('succes', "La zone a été ajoutée.", "Succès");
-                }
-            } catch (Exception $e) {
-                $this->redirect('error', "Erreur : " . $e->getMessage(), "Erreur système");
-            }
+    // Supprimer (Envoyer en corbeille)
+    public function deleteZone($id) {
+        if ($this->zoneRepository->desactivate($id)) {
+            $this->redirect('succes', "Zone déplacée en corbeille", "Suppression");
         }
     }
 
-    public function updateZone()
-    {
-        if ($_SERVER["REQUEST_METHOD"] == 'POST') {
-            $id = $_POST['id'] ?? null;
-            $nom = trim($_POST['nom_quartier'] ?? '');
-
-            if (!$id || empty($nom)) {
-                $this->redirect('error', "Données incomplètes.", "Erreur");
-            }
-
-            try {
-                if ($this->zoneRepository->update($id, $nom)) {
-                    $this->redirect('succes', "La zone a été mise à jour.", "Succès");
-                } else {
-                    $this->redirect('error', "Aucune modification effectuée.", "Info");
-                }
-            } catch (Exception $e) {
-                $this->redirect('error', "Erreur : " . $e->getMessage(), "Erreur");
-            }
+    // Restaurer
+    public function restoreZone($id) {
+        if ($this->zoneRepository->activate($id)) {
+            $this->redirect('succes', "Zone restaurée", "Succès", "CorbeilleZone");
         }
     }
 
-    public function deleteZone($id)
-    {
+    // Suppression réelle
+    public function permanentDelete($id) {
         try {
             if ($this->zoneRepository->delete($id)) {
-                $this->redirect('succes', "Zone supprimée définitivement.", "Suppression");
+                $this->redirect('succes', "Zone supprimée définitivement", "Supprimé", "CorbeilleZone");
             }
         } catch (Exception $e) {
-            $this->redirect('error', "Impossible de supprimer cette zone car elle est liée à des annonces.", "Erreur de liaison");
+            $this->redirect('error', "Impossible : zone liée à des annonces", "Erreur", "CorbeilleZone");
         }
     }
 }

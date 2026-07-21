@@ -6,7 +6,7 @@ $avisRepo = new AvisRepository();
 $annonceRepo = new AnnonceRepository();
 
 $listeAvis = $avisRepo->getAllWithDetails();
-$annonces = $annonceRepo->getAllAnnonces('Ouvert'); // Pour le select
+$annonces = $annonceRepo->getAllAnnoncesWithDetails(); // Utilise la nouvelle méthode
 ?>
 
 <!DOCTYPE html>
@@ -33,11 +33,12 @@ $annonces = $annonceRepo->getAllAnnonces('Ouvert'); // Pour le select
 		<div id="content" class="content">
 			<!-- begin breadcrumb -->
 			<ol class="breadcrumb float-xl-right">
-				<li class="breadcrumb-item">
+				<!--<li class="breadcrumb-item">
 					<a href="#modal-avis" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Ajouter</a>
-				</li>
-				<li class="breadcrumb-item"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Corbeille</a></li>
-				<li class="breadcrumb-item active"><a href="javascript:;" class="btn btn-sm btn-dark text-white fw-bold" data-toggle="modal">Users</a></li>
+				</li>-->
+				<li class="breadcrumb-item"><a href="CorbeilleAvis" class="btn btn-sm btn-dark text-white fw-bold">Corbeille</a></li>
+				<li class="breadcrumb-item active"><a href="ListeEtudiant" class="btn btn-sm btn-dark text-white fw-bold">Étudiants</a></li>
+				<li class="breadcrumb-item"><a href="ListePrestataire" class="btn btn-sm btn-dark text-white fw-bold">Prestataires</a></li>
 			</ol>
 			<!-- end breadcrumb -->
 			<!-- begin page-header -->
@@ -69,22 +70,58 @@ $annonces = $annonceRepo->getAllAnnonces('Ouvert'); // Pour le select
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach($listeAvis as $index => $avis): ?>
-							<tr>
-								<td><?= $index + 1 ?></td>
-								<td class="with-img"><img src="public/templates/templateAdmin/assets/img/user/user-1.jpg" class="img-rounded height-30" /></td>
-								<td><span class="badge badge-warning"><?= $avis['note'] ?> / 5</span></td>
-								<td>
-									<strong>Annonce: <?= htmlspecialchars($avis['annonce_titre']) ?></strong><br>
-									<?= nl2br(htmlspecialchars($avis['commentaire'])) ?>
-								</td>
-								<td>
-									<a href="#modal-edit-avis" data-toggle="modal" class="btn btn-xs btn-primary" onclick='editAvis(<?= json_encode($avis) ?>)'>Modifier</a>
-									<a href="javascript:;" class="btn btn-xs btn-danger" onclick="confirmDeleteAvis(<?= $avis['id'] ?>)">Supprimer</a>
-								</td>
-							</tr>
-							<?php endforeach; ?>
-						</tbody>
+    <?php foreach($listeAvis as $index => $avis): ?>
+    <tr>
+        <td class="f-w-600 text-inverse"><?= $index + 1 ?></td>
+        
+        <!-- Photo de l'auteur dynamique -->
+        <td class="with-img">
+            <?php $photo = !empty($avis['auteur_photo']) ? $avis['auteur_photo'] : 'default.png'; ?>
+            <img src="public/images/users/<?= $photo ?>" class="img-rounded height-30" title="<?= htmlspecialchars($avis['auteur_nom']) ?>" />
+        </td>
+
+        <!-- Note avec système d'étoiles et badge de couleur -->
+        <td>
+            <div class="mb-1">
+                <?php 
+                $note = intval($avis['note']);
+                for($i=1; $i<=5; $i++) {
+                    echo ($i <= $note) ? '<i class="fa fa-star text-warning"></i>' : '<i class="fa fa-star text-silver-darker"></i>';
+                }
+                ?>
+            </div>
+            <?php 
+                $badgeClass = 'badge-danger'; // 1-2
+                if($note == 3) $badgeClass = 'badge-warning';
+                if($note >= 4) $badgeClass = 'badge-success';
+            ?>
+            <span class="badge <?= $badgeClass ?>"><?= $note ?> / 5</span>
+        </td>
+
+        <!-- Détails de l'avis -->
+        <td>
+            <div class="text-inverse f-w-600">Posté par : <?= htmlspecialchars($avis['auteur_nom']) ?></div>
+            <div class="mb-1"><small class="text-primary"><i class="fa fa-link"></i> Sur : <?= htmlspecialchars($avis['annonce_titre']) ?></small></div>
+            <div class="text-muted border-left pl-2" style="font-style: italic;">
+                "<?= nl2br(htmlspecialchars($avis['commentaire'])) ?>"
+            </div>
+            <small class="text-info mt-1 d-block">
+                <i class="fa fa-clock"></i> <?= date('d/m/Y à H:i', strtotime($avis['created_at'])) ?>
+            </small>
+        </td>
+
+        <!-- Boutons avec icônes -->
+        <td class="text-nowrap">
+            <!--<a href="#modal-edit-avis" data-toggle="modal" class="btn btn-sm btn-primary" onclick='editAvis(<?= json_encode($avis) ?>)'>
+                <i class="fa fa-edit"></i> Modifier
+            </a>-->
+            <a href="javascript:;" class="btn btn-sm btn-danger" onclick="confirmDeleteAvis(<?= $avis['id'] ?>)">
+                <i class="fa fa-trash"></i> Supprimer
+            </a>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+</tbody>
 					</table>
 				</div>
 			</div>

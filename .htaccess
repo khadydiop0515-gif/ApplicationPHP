@@ -22,9 +22,13 @@ RewriteRule ^CorbeilleCandidature$ view/pages/admin/candidature/corbeille.php
 RewriteRule ^ListeCategorie$ view/pages/admin/categorie/liste.php
 RewriteRule ^CorbeilleCategorie$ view/pages/admin/categorie/corbeille.php
 
-#View Utilisateur
-RewriteRule ^ListeUtilisateur$ view/pages/admin/user/liste.php
-RewriteRule ^CorbeilleUtilisateur$ view/pages/admin/user/corbeille.php
+#View Étudiant
+RewriteRule ^ListeEtudiant$ view/pages/admin/etudiant/liste.php
+RewriteRule ^CorbeilleEtudiant$ view/pages/admin/etudiant/corbeille.php
+
+#View Prestataire
+RewriteRule ^ListePrestataire$ view/pages/admin/prestataire/liste.php
+RewriteRule ^CorbeillePrestataire$ view/pages/admin/prestataire/corbeille.php
 
 #view Zone
 RewriteRule ^ListeZone$ view/pages/admin/zone/liste.php

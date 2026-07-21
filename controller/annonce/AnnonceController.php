@@ -1,6 +1,6 @@
 <?php
 require_once("../../model/AnnonceRepository.php");
-
+require_once("../../controller/MailService.php");
 class AnnonceController
 {
     private $annonceRepository;
@@ -71,21 +71,63 @@ class AnnonceController
     }
     //Fonction pour supprimer (désactiver) une annonce
 
-    public function deleteAnnonce($id)
+    
+    public function deleteAnnonce($id, $motif)
     {
-        if (empty($id)) {
-            $this->setErrorAndRedirect("Identifiant d'annonce manquant.", "Erreur");
-        }
-
         try {
-            $reponse = $this->annonceRepository->desactivate($id);
-            if ($reponse) {
-                $this->setSuccessAndRedirect("L'annonce a été déplacée dans la corbeille.", "Suppression");
-            } else {
-                $this->setErrorAndRedirect("Impossible de supprimer cette annonce.", "Erreur");
+            // 1. On récupère les détails de l'annonce pour avoir l'email de l'auteur
+            // Tu peux créer une petite méthode getAnnonceWithAuthorEmail dans ton repo si besoin
+            $annonce = $this->annonceRepository->getAnnonceById($id);
+            
+            // On récupère l'utilisateur pour avoir son email (id de created_by)
+            require_once("../../model/UserRepository.php");
+            $userRepo = new UserRepository();
+            $owner = $userRepo->getById($annonce['created_by']);
+
+            // 2. On désactive en base de données avec le motif
+            $reponse = $this->annonceRepository->desactivate($id, $motif);
+
+            if ($reponse && $owner) {
+                // 3. On envoie le mail de notification
+                $sujet = "Suppression de votre annonce : " . $annonce['titre'];
+                $corps = "Nous vous informons que votre annonce <b>'".$annonce['titre']."'</b> a été retirée de notre plateforme.<br><br>
+                        <b>Motif de la suppression :</b><br>
+                        <blockquote style='color: #555;'>$motif</blockquote>";
+                
+                MailService::sendNotification($owner['email'], $sujet, $corps);
+
+                $this->setSuccessAndRedirect("L'annonce a été supprimée et l'auteur notifié.", "Succès");
             }
         } catch (Exception $e) {
-            $this->setErrorAndRedirect("Erreur lors de la suppression : " . $e->getMessage(), "Erreur");
+            $this->setErrorAndRedirect("Erreur : " . $e->getMessage(), "Erreur");
         }
     }
+
+    // Dans AnnonceController.php
+
+// Restaurer une annonce
+public function restoreAnnonce($id)
+{
+    try {
+        $reponse = $this->annonceRepository->activate($id); // Utilise ta méthode activate() existante
+        if ($reponse) {
+            $this->setSuccessAndRedirect("L'annonce a été restaurée.", "Succès", "CorbeilleAnnonce");
+        }
+    } catch (Exception $e) {
+        $this->setErrorAndRedirect("Erreur lors de la restauration.", "Erreur", "CorbeilleAnnonce");
+    }
+}
+
+// Supprimer définitivement
+public function permanentDelete($id)
+{
+    try {
+        $reponse = $this->annonceRepository->delete($id); // Utilise ta méthode delete() existante
+        if ($reponse) {
+            $this->setSuccessAndRedirect("L'annonce a été supprimée définitivement.", "Supprimé", "CorbeilleAnnonce");
+        }
+    } catch (Exception $e) {
+        $this->setErrorAndRedirect("Erreur fatale lors de la suppression.", "Erreur", "CorbeilleAnnonce");
+    }
+}
 }
