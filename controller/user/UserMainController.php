@@ -36,3 +36,20 @@ if (isset($_GET['restore_id'])) {
 if (isset($_GET['permanent_delete_id'])) {
     $controller->permanentDelete($_GET['permanent_delete_id']);
 }
+if (isset($_POST['frmUpdatePhoto'])) {
+    $controller->updateProfilePhoto();
+}
+if (isset($_POST['frmUpdateInfo'])) {
+    $controller->updatePersonalInfo();
+}
+
+if (isset($_POST['frmUpdatePassword'])) {
+    $controller->changePassword();
+}
+
+if (isset($_POST['frmContact'])) {
+    $controller->sendContactMessage();
+}
+if (isset($_POST['frmUpdateFullInfo'])) {
+    $controller->updateFullProfile();
+}

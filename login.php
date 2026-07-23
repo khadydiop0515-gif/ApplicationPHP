@@ -1,3 +1,18 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+if (isset($_SESSION['id'])) {
+    // Si l'utilisateur est déjà là, on le renvoie vers son espace selon son rôle
+    if ($_SESSION['role'] === 'Admin') {
+        header("Location: admin");
+    } elseif ($_SESSION['role'] === 'Prestataire') {
+        header("Location: DashboardPrestataire");
+    } else {
+        header("Location: home");
+    }
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

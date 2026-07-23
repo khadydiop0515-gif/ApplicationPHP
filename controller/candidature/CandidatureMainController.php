@@ -20,12 +20,12 @@ if (isset($_POST['frmEditCandidature'])) {
     $candCtrl->updateCandidature();
 }
 
-// Suppimer
+/* Suppimer
 if (isset($_GET['delete_id'])) {
     $id = $_GET['delete_id'];
     $motif = isset($_GET['motif']) ? urldecode($_GET['motif']) : "Non précisé";
     $candCtrl->deleteCandidature($id, $motif);
-}
+}*/
 
 if (isset($_GET['restore_id'])) {
     $candCtrl->restoreCandidature($_GET['restore_id']);
@@ -33,4 +33,13 @@ if (isset($_GET['restore_id'])) {
 
 if (isset($_GET['permanent_delete_id'])) {
     $candCtrl->permanentDelete($_GET['permanent_delete_id']);
+}
+if (isset($_GET['accept_id'])) {
+    $candCtrl->acceptCandidature($_GET['accept_id']);
+}
+
+if (isset($_GET['delete_id'])) { 
+    $id = $_GET['delete_id'];
+    $motif = isset($_GET['motif']) ? urldecode($_GET['motif']) : "Profil non correspondant";
+    $candCtrl->rejectCandidature($id, $motif);
 }

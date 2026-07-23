@@ -157,4 +157,57 @@ public function deletePermanently($id) {
         return false;
     }
 }
+
+public function updatePhoto($id, $photoName) {
+    $sql = "UPDATE users SET photo = :photo, updated_at = NOW() WHERE id = :id";
+    try {
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['photo' => $photoName, 'id' => $id]);
+    } catch (PDOException $e) { return false; }
+}
+public function countByRole($role) {
+    $stmt = $this->db->prepare("SELECT COUNT(*) FROM users WHERE role = :role AND etat = 1");
+    $stmt->execute(['role' => $role]);
+    return $stmt->fetchColumn();
+}
+
+/**
+ * Met à jour les informations de contact de l'utilisateur
+ */
+public function updateContactInfo($id, $phone, $adresse) {
+    $sql = "UPDATE users SET phone = :phone, adresse = :adresse, updated_at = NOW() WHERE id = :id";
+    try {
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['phone' => $phone, 'adresse' => $adresse, 'id' => $id]);
+    } catch (PDOException $e) { return false; }
+}
+
+/**
+ * Met à jour le mot de passe
+ */
+
+public function updateFullProfile($id, $nom, $prenom, $phone, $adresse, $ninea = null) {
+        $sql = "UPDATE users SET nom = :nom, prenom = :prenom, phone = :phone, 
+                adresse = :adresse, ninea = :ninea, updated_at = NOW() 
+                WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'nom' => $nom, 'prenom' => $prenom, 'phone' => $phone, 
+            'adresse' => $adresse, 'ninea' => $ninea, 'id' => $id
+        ]);
+    }
+
+    public function updatePassword($id, $password) {
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+        $sql = "UPDATE users SET password = :pass, updated_at = NOW() WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['pass' => $hashed, 'id' => $id]);
+    }
+
+
+
+
+
+
+
 }

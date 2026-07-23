@@ -64,4 +64,59 @@ class AvisRepository extends DBRepository {
         $stmt = $this->db->prepare($sql);
         return $stmt->execute(['id' => $id]);
     }
+
+    public function getAvisByAnnonce(int $annonceId) {
+    $sql = "SELECT av.*, CONCAT(u.prenom, ' ', u.nom) as auteur_nom, u.photo as auteur_photo 
+            FROM avis av
+            JOIN users u ON av.user_id = u.id
+            WHERE av.annonce_id = :id AND av.etat = 1
+            ORDER BY av.created_at DESC";
+    try {
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $annonceId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+/**
+ * Récupérer tous les avis se trouvant dans la corbeille (etat = 0)
+ */
+public function getTrashWithDetails() {
+    // On sélectionne les avis où etat = 0
+    // On fait des jointures pour savoir qui a écrit l'avis et sur quelle annonce
+    $sql = "SELECT av.*, 
+                   CONCAT(u.prenom, ' ', u.nom) as auteur_nom, 
+                   an.titre as annonce_titre 
+            FROM avis av
+            LEFT JOIN users u ON av.user_id = u.id
+            LEFT JOIN annonce an ON av.annonce_id = an.id
+            WHERE av.etat = 0
+            ORDER BY av.deleted_at DESC";
+
+    try {
+        $query = $this->db->query($sql);
+        if (!$query) {
+            return [];
+        }
+        return $query->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    } catch (PDOException $e) {
+        error_log("Erreur SQL getTrash Avis : " . $e->getMessage());
+        return [];
+    }
+}
+public function getGlobalRating(int $id) {
+    $sql = "SELECT AVG(CAST(note AS DECIMAL(10,2))) 
+            FROM avis av 
+            JOIN annonce a ON av.annonce_id = a.id 
+            WHERE a.created_by = :id AND av.etat = 1";
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute(['id' => $id]);
+    $moyenne = $stmt->fetchColumn();
+    return $moyenne ? round(($moyenne / 5) * 100) : 0; // Retourne un pourcentage
+}
+public function getGlobalStats() {
+    $sql = "SELECT COUNT(*) as total, AVG(CAST(note AS DECIMAL(10,2))) as moyenne FROM avis WHERE etat = 1";
+    return $this->db->query($sql)->fetch(PDO::FETCH_ASSOC);
+}
 }

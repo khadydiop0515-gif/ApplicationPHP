@@ -17,7 +17,8 @@
 	<!-- ================== END PAGE LEVEL CSS STYLE ================== -->
 
 		<!-- ================== DATATABLE STYLE ================== -->
-	<link href="../assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
-	<link href="../assets/plugins/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" />
+	<link href="public/templates/templateAdmin/assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+	<link href="public/templates/templateAdmin/assets/plugins/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" />
+	<link rel="icon" type="image/png" href="public/templates/templateAdmin/assets/img/logo/logo-bs4.png" />
 	<!-- ================== END DATATABLE STYLE ================== -->
 </head>

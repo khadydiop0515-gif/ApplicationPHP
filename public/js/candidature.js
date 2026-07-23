@@ -4,28 +4,45 @@ function editCandidature(data) {
     document.getElementById('edit_message').value = data.message_motivation;
 }
 
+// === DOIVENT ÊTRE GLOBALES ===
+
+function confirmAcceptCandidature(id) {
+    Swal.fire({
+        title: 'Accepter ce candidat ?',
+        text: "Un email de confirmation lui sera envoyé.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#00acac',
+        cancelButtonColor: '#707478',
+        confirmButtonText: 'Oui, accepter !',
+        cancelButtonText: 'Annuler',
+        background: '#2d353c',
+        color: '#fff'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "candidatureMainController?accept_id=" + id;
+        }
+    });
+}
+
 function confirmDeleteCandidature(id) {
     Swal.fire({
-        title: 'Motif de rejet/suppression',
+        title: 'Motif de rejet',
         input: 'textarea',
-        inputPlaceholder: 'Expliquez à l\'étudiant pourquoi sa candidature est retirée...',
+        inputPlaceholder: 'Expliquez pourquoi la candidature est refusée...',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ff5b57',
-        confirmButtonText: 'Supprimer et notifier',
+        confirmButtonText: 'Refuser et notifier',
         background: '#2d353c',
         color: '#fff',
         preConfirm: (motif) => {
-            if (!motif || motif.trim().length < 5) {
-                Swal.showValidationMessage('Veuillez saisir un motif (5 caract. min)');
-            }
+            if (!motif) { Swal.showValidationMessage('Motif obligatoire'); }
             return motif;
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            Swal.fire({ title: 'Traitement...', didOpen: () => { Swal.showLoading() } });
             const motif = encodeURIComponent(result.value);
-            // Redirection vers le main controller
             window.location.href = "candidatureMainController?delete_id=" + id + "&motif=" + motif;
         }
     });

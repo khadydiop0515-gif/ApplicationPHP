@@ -34,6 +34,25 @@ RewriteRule ^CorbeillePrestataire$ view/pages/admin/prestataire/corbeille.php
 RewriteRule ^ListeZone$ view/pages/admin/zone/liste.php
 RewriteRule ^CorbeilleZone$ view/pages/admin/zone/corbeille.php
 
+# View DétailsAnnonce
+RewriteRule ^detailsAnnonce$ view/pages/vitrine/detailsAnnonce.php
+
+RewriteRule ^ToutesLesOffres$ view/pages/vitrine/toutesLesAnnonces.php
+
+# Routes Prestataire
+
+RewriteRule ^CandidaturesRecues$ view/pages/prestataire/candidaturesRecues.php
+RewriteRule ^MesAnnonces$ view/pages/prestataire/mesAnnonces.php
+RewriteRule ^NouvelleAnnonce$ view/pages/prestataire/AddAnnonce.php
+RewriteRule ^DashboardPrestataire$ view/pages/prestataire/dashboard.php
+RewriteRule ^Layout$ view/pages/prestataire/layout.php
+
+# Route pour le profil
+RewriteRule ^MonProfil$ view/pages/vitrine/monProfil.php
+
+# Route pour les postulations de l'étudiant
+RewriteRule ^MesPostulations$ view/pages/vitrine/mesPostulations.php
+
 #-------------------------- Controller -----------------------------
 #Annonce
 RewriteRule ^annonceMainController$ controller/annonce/AnnonceMainController.php

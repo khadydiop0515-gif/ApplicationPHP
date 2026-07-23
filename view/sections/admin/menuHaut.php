@@ -1,7 +1,7 @@
 	<div id="header" class="header navbar-default">
 		<!-- begin navbar-header -->
 		<div class="navbar-header">
-				<a href="index.html" class="navbar-brand"><span class="navbar-logo"></span> <b>Page Admin</b></a>
+				<a href="index.php" class="navbar-brand"><span class="navbar-logo"></span> <b>Page Admin</b></a>
 			<button type="button" class="navbar-toggle" data-click="sidebar-toggled">
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
@@ -36,7 +36,7 @@
 					</a>
 					<a href="javascript:;" class="dropdown-item media">
 						<div class="media-left">
-							<img src="public/templates/templateAdmin/assets/img/user/user-1.jpg" class="media-object" alt="" />
+							<img src="public/images/users/<?= $_SESSION['photo'] ?? 'default.png' ?>" />
 							<i class="fa fa-user-plus text-blue media-object-icon"></i>
 						</div>
 						<div class="media-body">
@@ -61,7 +61,7 @@
 			</li>
 			<li class="dropdown navbar-user">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-					<img src="public/templates/templateAdmin/assets/img/user/user-13.jpg" alt="" /> 
+					<img src="public/images/users/<?= $_SESSION['photo'] ?? 'default.png' ?>" />
 					<span class="d-none d-md-inline">
 						<?php 
 							if(isset($_SESSION['prenom']) && isset($_SESSION['nom'])) {
@@ -73,7 +73,7 @@
 					</span> <b class="caret"></b>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
-					<a href="javascript:;" class="dropdown-item">Profil</a>
+					<a href="MonProfil" class="dropdown-item">Mon Profil</a>
 					<a href="javascript:;" class="dropdown-item">Paramètres</a>
 					<div class="dropdown-divider"></div>
 					<a href="userMainController?action=logout" class="dropdown-item">Déconnexion</a>

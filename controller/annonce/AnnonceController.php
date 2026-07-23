@@ -40,7 +40,9 @@ class AnnonceController
             try {
                 $reponse = $this->annonceRepository->addAnnonce($titre, $description, $salaire, $categorie_id, $zone_id, $created_by);
                 if ($reponse) {
-                    $this->setSuccessAndRedirect("Annonce publiée avec succès.", "Félicitations");
+                    // Redirection selon le rôle
+                    $redirect = ($_SESSION['role'] === 'Admin') ? "ListeAnnonce" : "MesAnnonces";
+                    $this->setSuccessAndRedirect("Votre annonce est en ligne !", "Succès", $redirect);
                 }
             } catch (Exception $e) {
                 $this->setErrorAndRedirect("Erreur : " . $e->getMessage(), "Erreur");
@@ -75,35 +77,50 @@ class AnnonceController
     public function deleteAnnonce($id, $motif)
     {
         try {
-            // 1. On récupère les détails de l'annonce pour avoir l'email de l'auteur
-            // Tu peux créer une petite méthode getAnnonceWithAuthorEmail dans ton repo si besoin
+            // 1. Récupération des infos de l'annonce
             $annonce = $this->annonceRepository->getAnnonceById($id);
-            
-            // On récupère l'utilisateur pour avoir son email (id de created_by)
+            if (!$annonce) {
+                $this->setErrorAndRedirect("Annonce introuvable.", "Erreur");
+            }
+
+            // 2. Récupération du propriétaire (Prestataire) pour le mail
             require_once("../../model/UserRepository.php");
             $userRepo = new UserRepository();
             $owner = $userRepo->getById($annonce['created_by']);
 
-            // 2. On désactive en base de données avec le motif
+            // 3. Désactivation en base de données
             $reponse = $this->annonceRepository->desactivate($id, $motif);
 
-            if ($reponse && $owner) {
-                // 3. On envoie le mail de notification
-                $sujet = "Suppression de votre annonce : " . $annonce['titre'];
-                $corps = "Nous vous informons que votre annonce <b>'".$annonce['titre']."'</b> a été retirée de notre plateforme.<br><br>
-                        <b>Motif de la suppression :</b><br>
-                        <blockquote style='color: #555;'>$motif</blockquote>";
-                
-                MailService::sendNotification($owner['email'], $sujet, $corps);
+            if ($reponse) {
+                // --- LOGIQUE DE REDIRECTION DYNAMIQUE ---
+                // Si c'est l'admin, on reste sur le panel admin. 
+                // Si c'est le prestataire, on le renvoie sur "MesAnnonces"
+                $urlRedirection = ($_SESSION['role'] === 'Admin') ? "ListeAnnonce" : "MesAnnonces";
 
-                $this->setSuccessAndRedirect("L'annonce a été supprimée et l'auteur notifié.", "Succès");
+                // 4. Envoi du mail de notification
+                if ($owner) {
+                    $sujet = "Information sur votre annonce : " . $annonce['titre'];
+                    
+                    // On adapte un peu le texte si c'est le prestataire lui-même qui supprime
+                    $auteurAction = ($_SESSION['id'] == $owner['id']) ? "vous avez" : "l'administration a";
+                    
+                    $corps = "Bonjour " . htmlspecialchars($owner['prenom']) . ",<br><br>
+                            Nous vous informons que " . $auteurAction . " retiré l'annonce <b>'" . htmlspecialchars($annonce['titre']) . "'</b> de notre plateforme.<br><br>
+                            <b>Motif enregistré :</b><br>
+                            <blockquote style='color: #555; background: #f9f9f9; padding: 10px; border-left: 4px solid #ccc;'>$motif</blockquote>";
+                    
+                    MailService::sendNotification($owner['email'], $sujet, $corps);
+                }
+
+                $this->setSuccessAndRedirect("L'action a été effectuée et le mail envoyé.", "Succès", $urlRedirection);
             }
         } catch (Exception $e) {
             $this->setErrorAndRedirect("Erreur : " . $e->getMessage(), "Erreur");
         }
     }
 
-    // Dans AnnonceController.php
+// Dans controller/annonce/AnnonceController.php
+
 
 // Restaurer une annonce
 public function restoreAnnonce($id)

@@ -7,7 +7,7 @@
 						<a href="javascript:;" data-toggle="nav-profile">
 							<div class="cover with-shadow"></div>
 							<div class="image">
-								<img src="public/templates/templateAdmin/assets/img/user/user-13.jpg" alt="Admin Goorgoorlu" />
+								<img src="public/images/users/<?= $_SESSION['photo'] ?? 'default.png' ?>" />
 							</div>
 							<div class="info">
 								<b class="caret pull-right"></b>Admin Goorgoorlu

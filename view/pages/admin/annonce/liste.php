@@ -1,3 +1,7 @@
+<?php 
+require_once("../../../../controller/SecurityProvider.php"); 
+protectAdmin(); 
+?>
 <?php
 require_once("../../../../model/AnnonceRepository.php");
 require_once("../../../../model/CategorieRepository.php");

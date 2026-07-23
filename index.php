@@ -1,3 +1,12 @@
+<?php
+// Démarrage session pour vérifier si l'étudiant est connecté
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+require_once("model/AnnonceRepository.php");
+$annonceRepo = new AnnonceRepository();
+$annonces = $annonceRepo->getPublicAnnonces(6); // On en récupère 6 pour l'accueil
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 	
@@ -38,12 +47,16 @@
 		
 		<!-- ================== SECTION SERVICES ================== -->
 		<?php require_once("view/sections/vitrine/services.php"); ?>
+
 		
 		<!-- ================== SECTION ACTION ================== -->
 		<?php require_once("view/sections/vitrine/action.php"); ?>
 		
 		<!-- ================== SECTION Réalisation ================== -->
 		<?php require_once("view/sections/vitrine/realisation.php"); ?>
+
+		<!-- ================== SECTION DERNIERES OFFRES (NOUVEAU) ================== -->
+		<?php require_once("view/sections/vitrine/offres.php"); ?>
 		
 		<!-- ================== SECTION CLIENTS ================== -->
 		<?php require_once("view/sections/vitrine/clients.php"); ?>

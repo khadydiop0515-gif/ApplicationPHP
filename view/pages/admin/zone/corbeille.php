@@ -1,3 +1,7 @@
+<?php 
+require_once("../../../../controller/SecurityProvider.php"); 
+protectAdmin(); 
+?>
 <?php
 require_once("../../../../model/ZoneRepository.php");
 $repo = new ZoneRepository();

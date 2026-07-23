@@ -6,8 +6,8 @@
 	<!-- ================== BEGIN PAGE LEVEL JS ================== -->
 	<script src="public/templates/templateAdmin/assets/plugins/d3/d3.min.js"></script>
 	<script src="public/templates/templateAdmin/assets/plugins/nvd3/build/nv.d3.min.js"></script>
-	<script src="public/templates/templateAdmin/assets/plugins/jvectormap-next/jquery-jvectormap.min.js"></script>
-	<script src="public/templates/templateAdmin/assets/plugins/jvectormap-next/jquery-jvectormap-world-mill.js"></script>
+	<!--<script src="public/templates/templateAdmin/assets/plugins/jvectormap-next/jquery-jvectormap.min.js"></script>*/-->
+	<!--<script src="public/templates/templateAdmin/assets/plugins/jvectormap-next/jquery-jvectormap-world-mill.js"></script>-->
 	<script src="public/templates/templateAdmin/assets/plugins/apexcharts/dist/apexcharts.min.js"></script>
 	<script src="public/templates/templateAdmin/assets/plugins/moment/min/moment.min.js"></script>
 	<script src="public/templates/templateAdmin/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
