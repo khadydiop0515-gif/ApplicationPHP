@@ -27,11 +27,11 @@ public function auth() {
         // 1. Cas Admin Statique
         if ($email === "admin@gmail.com" && $password === "passer123"){
             $_SESSION["id"] = 1; 
-            $_SESSION["nom"] = "Mbaye";
-            $_SESSION["prenom"] = "Andalla";
+            $_SESSION["nom"] = "Goorgoorlou";
+            $_SESSION["prenom"] = "Administration";
             $_SESSION["email"] = "admin@gmail.com";
             $_SESSION["role"] = "Admin";
-            $_SESSION["photo"] = "default.png";
+            $_SESSION["photo"] = "admin.png";
             $_SESSION["phone"] = "77 631 92 00"; 
             $_SESSION["adresse"] = "Dakar, Sénégal";
             

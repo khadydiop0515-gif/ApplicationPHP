@@ -140,16 +140,7 @@ public function reject($id, $motif) {
     return $stmt->execute(['id' => $id, 'motif' => $motif]);
 }
 
-public function countPendingCandidatures(int $id) {
-    // On compte les candidatures 'En attente' liées aux annonces de ce prestataire
-    $sql = "SELECT COUNT(c.id) 
-            FROM candidature c 
-            JOIN annonce a ON c.annonce_id = a.id 
-            WHERE a.created_by = :id AND c.statut = 'En attente' AND c.etat = 1";
-    $stmt = $this->db->prepare($sql);
-    $stmt->execute(['id' => $id]);
-    return $stmt->fetchColumn();
-}
+
 /**
  * Récupère toutes les candidatures d'un étudiant spécifique
  */
@@ -183,7 +174,34 @@ public function getStatsLast7Days() {
             ORDER BY date ASC";
     return $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 }
+/**
+ * Compte les candidatures en attente.
+ * On ajoute un "?" devant int pour dire que l'ID peut être nul (pour l'admin).
+ */
+public function countPendingCandidatures(?int $id = null) {
+    $sql = "SELECT COUNT(c.id) 
+            FROM candidature c 
+            JOIN annonce a ON c.annonce_id = a.id 
+            WHERE c.statut = 'En attente' AND c.etat = 1";
+    
+    // Si un ID est fourni (cas du prestataire), on filtre par son compte
+    if ($id !== null) {
+        $sql .= " AND a.created_by = :id";
+    }
 
+    try {
+        $stmt = $this->db->prepare($sql);
+        if ($id !== null) {
+            $stmt->execute(['id' => $id]);
+        } else {
+            $stmt->execute();
+        }
+        return (int)$stmt->fetchColumn();
+    } catch (PDOException $e) {
+        error_log("Erreur countPendingCandidatures : " . $e->getMessage());
+        return 0;
+    }
+}
 
 
 

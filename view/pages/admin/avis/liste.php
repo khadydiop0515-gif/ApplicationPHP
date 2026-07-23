@@ -1,5 +1,5 @@
 <?php 
-require_once("../../../../../controller/SecurityProvider.php"); 
+require_once("../../../../controller/SecurityProvider.php"); 
 protectAdmin(); 
 ?>
 <?php

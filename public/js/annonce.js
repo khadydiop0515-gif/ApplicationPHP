@@ -17,19 +17,22 @@ function showError(input, message) {
 
 // FONCTIONS GLOBALES 
 
+// FONCTION GLOBALE POUR REMPLIR LA MODALE
 function editAnnonce(data) {
-    document.getElementById('edit_id').value = data.id;
-    document.getElementById('edit_titre').value = data.titre;
-    document.getElementById('edit_description').value = data.description;
-    document.getElementById('edit_salaire').value = data.salaire;
-    document.getElementById('edit_categorie_id').value = data.categorie_id;
-    document.getElementById('edit_zone_id').value = data.zone_id;
-    document.getElementById('edit_statut').value = data.statut;
+    // Remplissage des champs par ID
+    if(document.getElementById('edit_id')) document.getElementById('edit_id').value = data.id;
+    if(document.getElementById('edit_titre')) document.getElementById('edit_titre').value = data.titre;
+    if(document.getElementById('edit_description')) document.getElementById('edit_description').value = data.description;
+    if(document.getElementById('edit_salaire')) document.getElementById('edit_salaire').value = data.salaire;
+    if(document.getElementById('edit_categorie_id')) document.getElementById('edit_categorie_id').value = data.categorie_id;
+    if(document.getElementById('edit_zone_id')) document.getElementById('edit_zone_id').value = data.zone_id;
+    if(document.getElementById('edit_statut')) document.getElementById('edit_statut').value = data.statut;
 
-    
+
+    // réveille les écouteurs et dégrise le bouton "Enregistrer"
     setTimeout(() => {
-        // On déclenche un événement factice pour forcer le check
-        document.getElementById('edit_titre').dispatchEvent(new Event('input'));
+        const event = new Event('input', { bubbles: true });
+        document.getElementById('edit_titre').dispatchEvent(event);
     }, 200);
 }
 
@@ -56,37 +59,48 @@ function editAnnonce(data) {
         }
     });
 }*/
-function confirmDelete(id) {
-    Swal.fire({
-        title: 'Motif de suppression',
-        input: 'textarea',
-        inputPlaceholder: 'Expliquez à l\'utilisateur pourquoi son annonce est supprimée...',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ff5b57',
-        cancelButtonColor: '#348fe2',
-        confirmButtonText: '<i class="fa fa-trash"></i> Supprimer et notifier',
-        cancelButtonText: 'Annuler',
-        background: '#2d353c',
-        color: '#fff',
-        preConfirm: (motif) => {
-            if (!motif || motif.trim().length < 5) {
-                Swal.showValidationMessage('Veuillez saisir un motif d\'au moins 5 caractères');
+// On ajoute le paramètre 'role'
+function confirmDelete(id, role) {
+    if (role === 'Admin') {
+        // CAS ADMIN : On demande le motif (ton code actuel)
+        Swal.fire({
+            title: 'Motif de suppression (Admin)',
+            input: 'textarea',
+            inputPlaceholder: 'Expliquez pourquoi vous supprimez cette annonce...',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff5b57',
+            confirmButtonText: 'Supprimer et notifier',
+            cancelButtonText: 'Annuler',
+            preConfirm: (motif) => {
+                if (!motif || motif.trim().length < 5) {
+                    Swal.showValidationMessage('Veuillez saisir un motif (5 caract. min)');
+                }
+                return motif;
             }
-            return motif;
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Traitement et envoi du mail...',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading() }
-            });
-            // On envoie l'ID et le MOTIF encodé au contrôleur
-            const motif = encodeURIComponent(result.value);
-            window.location.href = "annonceMainController?delete_id=" + id + "&motif=" + motif;
-        }
-    });
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const motif = encodeURIComponent(result.value);
+                window.location.href = "annonceMainController?delete_id=" + id + "&motif=" + motif;
+            }
+        });
+    } else {
+        // CAS PRESTATAIRE : Simple confirmation
+        Swal.fire({
+            title: 'Supprimer mon annonce ?',
+            text: "Cette action placera votre annonce dans la corbeille.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ff5b57',
+            confirmButtonText: 'Oui, supprimer',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // On envoie un motif par défaut pour le prestataire
+                window.location.href = "annonceMainController?delete_id=" + id + "&motif=Supprimé par l'auteur";
+            }
+        });
+    }
 }
 // LOGIQUE DE VALIDATION
 document.addEventListener("DOMContentLoaded", function() {

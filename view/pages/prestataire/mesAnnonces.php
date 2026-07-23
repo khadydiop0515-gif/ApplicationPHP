@@ -1,30 +1,32 @@
 <?php 
 require_once("../../../controller/SecurityProvider.php"); 
 protectPrestataire(); 
-?>
-<?php
+
+require_once("../../../model/AnnonceRepository.php");
+require_once("../../../model/CategorieRepository.php"); 
+require_once("../../../model/ZoneRepository.php");      
+
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-// 1. Anti-Cache
 header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
 header("Expires: 0");
 
-// 2. Vérification
 if (!isset($_SESSION['id']) || $_SESSION['role'] !== 'Prestataire') {
     header("Location: login?error=1&message=" . urlencode("Veuillez vous connecter à votre espace professionnel."));
     exit();
 }
-require_once("../../../model/AnnonceRepository.php");
+
 $repo = new AnnonceRepository();
 $mesAnnonces = $repo->getAnnoncesByPrestataire($_SESSION['id']);
+
+$categories = (new CategorieRepository())->getAll(); 
+$zones = (new ZoneRepository())->getAll();           
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
-    <!-- On utilise /ApplicationPHP/ pour être sûr que le navigateur trouve les fichiers peu importe l'URL -->
     <?php require_once("../../sections/admin/head.php"); ?>
-
 <body>
     <div id="page-loader" class="fade show"><span class="spinner"></span></div>
 
@@ -56,7 +58,7 @@ $mesAnnonces = $repo->getAnnoncesByPrestataire($_SESSION['id']);
                                 <th>Zone</th>
                                 <th>Candidatures</th>
                                 <th>Statut</th>
-                                <th>Actions</th>
+                                <th width="1%">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -77,9 +79,12 @@ $mesAnnonces = $repo->getAnnoncesByPrestataire($_SESSION['id']);
                                             <?= $a['statut'] ?>
                                         </span>
                                     </td>
+                                    <!-- CORRECTION ICI : Ajout du <td> manquant -->
                                     <td class="text-nowrap">
-                                        <a href="ModifierAnnonce?id=<?= $a['id'] ?>" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
-                                        <button onclick="confirmDelete(<?= $a['id'] ?>)" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
+                                        <a href="#modal-edit-annonce" data-toggle="modal" class="btn btn-sm btn-primary" onclick='editAnnonce(<?= htmlspecialchars(json_encode($a), ENT_QUOTES, "UTF-8") ?>)'>
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                        <button onclick="confirmDelete(<?= $a['id'] ?>, 'Prestataire')" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
@@ -95,10 +100,72 @@ $mesAnnonces = $repo->getAnnoncesByPrestataire($_SESSION['id']);
         <a href="javascript:;" class="btn btn-icon btn-circle btn-success btn-scroll-to-top fade" data-click="scroll-top"><i class="fa fa-angle-up"></i></a>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- MODAL MODIFIER ANNONCE -->
+    <div class="modal fade" id="modal-edit-annonce" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Modifier mon annonce</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <form action="annonceMainController" method="POST" id="editAnnonceForm">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="edit_id">
+
+                        <div class="form-group">
+                            <label class="f-w-700">Titre</label>
+                            <input type="text" class="form-control" id="edit_titre" name="titre" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="f-w-700">Description</label>
+                            <textarea class="form-control" id="edit_description" name="description" rows="5" required></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="f-w-700">Salaire (FCFA)</label>
+                                <input type="number" class="form-control" id="edit_salaire" name="salaire" required>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="f-w-700">Statut</label>
+                                <select class="form-control" id="edit_statut" name="statut">
+                                    <option value="Ouvert">Ouverte</option>
+                                    <option value="Pourvu">Pourvue</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label class="f-w-700">Catégorie</label>
+                                <select class="form-control" id="edit_categorie_id" name="categorie_id">
+                                    <?php foreach($categories as $c): ?>
+                                        <option value="<?= $c['id'] ?>"><?= $c['nom'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label class="f-w-700">Zone</label>
+                                <select class="form-control" id="edit_zone_id" name="zone_id">
+                                    <?php foreach($zones as $z): ?>
+                                        <option value="<?= $z['id'] ?>"><?= $z['nom_quartier'] ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" name="frmEditAnnonce" class="btn btn-primary fw-bold">Enregistrer les modifications</button>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Annuler</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <?php require_once("../../sections/admin/script.php"); ?>
+    <script src="/ApplicationPHP/public/js/annonce.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- On utilise un chemin qui part de la racine pour éviter les bugs du htaccess -->
-    <script src="public/js/annonce.js"></script>
 </body>
 </html>

@@ -14,7 +14,7 @@
     <div class="dropdown-menu dropdown-menu-right">
         <a href="MonProfil" class="dropdown-item">Paramètres du profil</a>
         <div class="dropdown-divider"></div>
-        <a href="userMainController?action=logout" class="dropdown-item text-danger">Déconnexion</a>
+        <a href="/ApplicationPHP/Logout" class="dropdown-item text-danger"><i class="fa fa-sign-out-alt m-r-10"></i> Déconnexion</a>
     </div>
 </li>
     </ul>

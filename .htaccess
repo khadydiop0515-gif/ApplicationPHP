@@ -53,6 +53,8 @@ RewriteRule ^MonProfil$ view/pages/vitrine/monProfil.php
 # Route pour les postulations de l'étudiant
 RewriteRule ^MesPostulations$ view/pages/vitrine/mesPostulations.php
 
+# Route pour la déconnexion propre
+RewriteRule ^Logout$ controller/user/UserMainController.php?action=logout [QSA,L]
 #-------------------------- Controller -----------------------------
 #Annonce
 RewriteRule ^annonceMainController$ controller/annonce/AnnonceMainController.php

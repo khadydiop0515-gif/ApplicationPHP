@@ -75,49 +75,38 @@ class AnnonceController
 
     
     public function deleteAnnonce($id, $motif)
-    {
-        try {
-            // 1. Récupération des infos de l'annonce
-            $annonce = $this->annonceRepository->getAnnonceById($id);
-            if (!$annonce) {
-                $this->setErrorAndRedirect("Annonce introuvable.", "Erreur");
-            }
+{
+    try {
+        $annonce = $this->annonceRepository->getAnnonceById($id);
+        if (!$annonce) { $this->setErrorAndRedirect("Annonce introuvable.", "Erreur"); }
 
-            // 2. Récupération du propriétaire (Prestataire) pour le mail
-            require_once("../../model/UserRepository.php");
-            $userRepo = new UserRepository();
-            $owner = $userRepo->getById($annonce['created_by']);
+        // On exécute la désactivation en base
+        $reponse = $this->annonceRepository->desactivate($id, $motif);
 
-            // 3. Désactivation en base de données
-            $reponse = $this->annonceRepository->desactivate($id, $motif);
+        if ($reponse) {
+            $roleActuel = $_SESSION['role'];
+            $urlRedir = ($roleActuel === 'Admin') ? "ListeAnnonce" : "MesAnnonces";
 
-            if ($reponse) {
-                // --- LOGIQUE DE REDIRECTION DYNAMIQUE ---
-                // Si c'est l'admin, on reste sur le panel admin. 
-                // Si c'est le prestataire, on le renvoie sur "MesAnnonces"
-                $urlRedirection = ($_SESSION['role'] === 'Admin') ? "ListeAnnonce" : "MesAnnonces";
-
-                // 4. Envoi du mail de notification
+            // LOGIQUE EMAIL : Uniquement si l'Admin supprime l'annonce de quelqu'un d'autre
+            if ($roleActuel === 'Admin') {
+                require_once("../../model/UserRepository.php");
+                $owner = (new UserRepository())->getById($annonce['created_by']);
+                
                 if ($owner) {
-                    $sujet = "Information sur votre annonce : " . $annonce['titre'];
-                    
-                    // On adapte un peu le texte si c'est le prestataire lui-même qui supprime
-                    $auteurAction = ($_SESSION['id'] == $owner['id']) ? "vous avez" : "l'administration a";
-                    
+                    $sujet = "Modération : Suppression de votre annonce";
                     $corps = "Bonjour " . htmlspecialchars($owner['prenom']) . ",<br><br>
-                            Nous vous informons que " . $auteurAction . " retiré l'annonce <b>'" . htmlspecialchars($annonce['titre']) . "'</b> de notre plateforme.<br><br>
-                            <b>Motif enregistré :</b><br>
-                            <blockquote style='color: #555; background: #f9f9f9; padding: 10px; border-left: 4px solid #ccc;'>$motif</blockquote>";
-                    
+                              L'administration a retiré votre annonce : <b>".$annonce['titre']."</b>.<br>
+                              <b>Motif :</b> $motif";
                     MailService::sendNotification($owner['email'], $sujet, $corps);
                 }
-
-                $this->setSuccessAndRedirect("L'action a été effectuée et le mail envoyé.", "Succès", $urlRedirection);
             }
-        } catch (Exception $e) {
-            $this->setErrorAndRedirect("Erreur : " . $e->getMessage(), "Erreur");
+
+            $this->setSuccessAndRedirect("L'annonce a été supprimée.", "Succès", $urlRedir);
         }
+    } catch (Exception $e) {
+        $this->setErrorAndRedirect("Erreur système.", "Erreur");
     }
+}
 
 // Restaurer une annonce
 public function restoreAnnonce($id)

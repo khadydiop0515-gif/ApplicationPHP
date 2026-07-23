@@ -14,11 +14,6 @@ if (isset($_POST['frmAddAnnonce'])) {
     $annonceCtrl->addAnnonce();
 }
 
-if (isset($_POST['frmEditAnnonce'])) {
-    $annonceCtrl->updateAnnonce(); 
-}
-
-
 if (isset($_GET['delete_id'])) {
     $id = $_GET['delete_id'];
     $motif = isset($_GET['motif']) ? urldecode($_GET['motif']) : "Aucun motif précisé";
@@ -32,5 +27,9 @@ if (isset($_GET['restore_id'])) {
 
 if (isset($_GET['permanent_delete_id'])) {
     $annonceCtrl->permanentDelete($_GET['permanent_delete_id']);
+}
+
+if (isset($_POST['frmEditAnnonce'])) {
+    $annonceCtrl->updateAnnonce();
 }
 ?>
